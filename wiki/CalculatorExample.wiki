@@ -1,5 +1,5 @@
 #summary A quick guide to the calculator example
-#labels Example
+#labels Example,Featured
 
 This example uses Windowlicker to test a simple calculator application.
 
