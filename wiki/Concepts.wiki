@@ -13,13 +13,15 @@ The vocabulary of gestures is extensible.  A new gesture can be written by imple
 
 === Probe ===
 
-An object that performs an asynchronous test and reports whether the test succeeded or failed, and why.
+An object that runs a test and records whether the test succeeded or failed, and why.
 
-Probes are executed by a ProbeRunner, which is responsible for asynchronously evaluating the probe, collecting results and throwing
+Probes are run asynchronously by a [http://code.google.com/p/windowlicker/source/browse/trunk/java/com/objogate/wl/Prober.java Prober], which is responsible for dispatching and synchronising with the execution of the probe in the system under test, collecting results and throwing exceptions if the probe fails.
 
 === Matcher ===
 
-A predicate over some value that can describe itself.  Window Licker uses Matchers to describe user interface components.  The [http://code.google.com/p/windowlicker/source/browse/trunk/java/com/objogate/wl/matcher/ComponentMatchers.java ComponentMatchers] class defines syntactic sugar functions to make code using matchers easier to read.
+Window Licker uses [http://code.google.com/p/hamcrest Hamcrest] Matchers to describe user interface components that are searched for by Probes.
+
+The [http://code.google.com/p/windowlicker/source/browse/trunk/java/com/objogate/wl/matcher/ComponentMatchers.java ComponentMatchers] class defines syntactic sugar functions to make code using matchers easier to read.
 
 === Tracker ====
 
