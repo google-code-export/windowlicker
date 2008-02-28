@@ -13,8 +13,14 @@ The vocabulary of gestures is extensible.  A new gesture can be written by imple
 
 === Probe ===
 
-To be done...
+An object that performs an asynchronous test and reports whether the test succeeded or failed, and why.
+
+Probes are executed by a ProbeRunner, which is responsible for asynchronously evaluating the probe, collecting results and throwing
 
 === Matcher ===
 
-To be done...
+A predicate over some value that can describe itself.  Window Licker uses Matchers to describe user interface components.  The [http://code.google.com/p/windowlicker/source/browse/trunk/java/com/objogate/wl/matcher/ComponentMatchers.java ComponentMatchers] class defines syntactic sugar functions to make code using matchers easier to read.
+
+=== Tracker ====
+
+An object that tracks a location on screen.  The mouse movement gesture uses a Tracker to define the destination of the mouse.  A Tracker can track a moving object, for example the center of a component that is being animated.
