@@ -8,7 +8,7 @@ There are a number of primitive gestures, such as pressing a mouse button, relea
 
 The [http://code.google.com/p/windowlicker/source/browse/trunk/java/com/objogate/wl/gesture/Gestures.java Gestures] class contains syntactic sugar for describing gestures to make test code easier to read.
 
-The vocabulary of gestures is extensible.  New gestures can be written by implementing the Gesture interface and writing a factory function to act as synctactic sugar.
+The vocabulary of gestures is extensible.  A new gesture can be written by implementing the [http://code.google.com/p/windowlicker/source/browse/trunk/java/com/objogate/wl/Gesture.java Gesture interface] and writing a factory function to act as synctactic sugar.
 
 
 === Probe ===
