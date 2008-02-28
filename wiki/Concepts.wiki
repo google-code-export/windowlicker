@@ -21,7 +21,6 @@ Probes are run asynchronously by a [http://code.google.com/p/windowlicker/source
 
 Window Licker uses [http://code.google.com/p/hamcrest Hamcrest] Matchers to describe user interface components that are searched for by Probes.
 
-The [http://code.google.com/p/windowlicker/source/browse/trunk/java/com/objogate/wl/matcher/ComponentMatchers.java ComponentMatchers] class defines syntactic sugar functions to make code using matchers easier to read.
 
 === Tracker ====
 
