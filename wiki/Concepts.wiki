@@ -2,20 +2,15 @@
 
 === Gesture ===
 
-An interaction with the user interface via the mouse and/or keyboard.  Window Licker runs tests by performing Gestures and observing the results.  
+A [http://code.google.com/p/windowlicker/source/browse/trunk/java/com/objogate/wl/Gesture.java Gesture] interacts with the user interface through the input devices.  Window Licker runs tests by performing Gestures and using Probes to observe the results.  
 
-There are a number of primitive gestures, such as pressing a mouse button, releasing a mouse button, moving the mouse, moving the mouse wheel, pressing a key and releasing a key. Gestures can be composed from other gestures.  For example, typing a character is a sequence of three gestures: pressing the key, waiting a short while and finally releasing a key.  Typing text is a sequence of gestures, each of which types one character.
-
-The [http://code.google.com/p/windowlicker/source/browse/trunk/java/com/objogate/wl/gesture/Gestures.java Gestures] class contains syntactic sugar for describing gestures to make test code easier to read.
-
-The vocabulary of gestures is extensible.  A new gesture can be written by implementing the [http://code.google.com/p/windowlicker/source/browse/trunk/java/com/objogate/wl/Gesture.java Gesture interface] and writing a factory function to act as synctactic sugar.
-
+There are a number of primitive gestures, such as pressing or releasing a mouse button or key or moving the mouse. Gestures can be composed into new gestures.  For example, typing text is performed by a sequence of gestures, each of which types one character by performing three gestures: pressing a key, waiting for a short while and then releasing the key.
 
 === Probe ===
 
-An object that runs a test and records whether the test succeeded or failed, and why.
+A Probe samples the system and reports whether the last sample satisfies some test criteria.  It can describe itself and why the last sample (if any) did not satisfy its test criteria.
 
-Probes are run asynchronously by a [http://code.google.com/p/windowlicker/source/browse/trunk/java/com/objogate/wl/Prober.java Prober], which is responsible for dispatching and synchronising with the execution of the probe in the system under test, collecting results and throwing exceptions if the probe fails.
+Probes are run asynchronously by a [http://code.google.com/p/windowlicker/source/browse/trunk/java/com/objogate/wl/Prober.java Prober], which is responsible for inserting the probe into the system under test,  synchronising with its execution and reporting the result of the probe.
 
 === Matcher ===
 
@@ -25,4 +20,4 @@ The [http://code.google.com/p/windowlicker/source/browse/trunk/java/com/objogate
 
 === Tracker ====
 
-An object that tracks a location on screen.  The mouse movement gesture uses a Tracker to define the destination of the mouse.  A Tracker can track a moving object, for example the center of a component that is being animated.
+An object that represents a, possibly moving, location on screen.  The mouse movement gesture uses a Tracker to define the destination of the movement so that the mouse can be used to interact with animated components.
