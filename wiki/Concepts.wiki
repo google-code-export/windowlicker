@@ -1,5 +1,10 @@
 #summary A glossary of Window Licker concepts
 
+=== Component Driver ===
+
+Tests use [http://code.google.com/p/windowlicker/source/browse/trunk/java/com/objogate/wl/driver/ComponentDriver.java ComponentDriver]s to interact with and make assertions about the user interface of the system under test.  A Component Driver 
+uses Gestures and Probes to interact with a real user interface component and provides the test with a convenient, higher level API.
+
 === Gesture ===
 
 A [http://code.google.com/p/windowlicker/source/browse/trunk/java/com/objogate/wl/Gesture.java Gesture] interacts with the user interface through the input devices.  Window Licker runs tests by performing Gestures and using Probes to observe the results.  
