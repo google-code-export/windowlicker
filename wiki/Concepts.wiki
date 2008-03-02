@@ -18,9 +18,17 @@ A Probe samples the system and reports whether the last sample satisfies some te
 
 Probes are run asynchronously by a [http://code.google.com/p/windowlicker/source/browse/trunk/java/com/objogate/wl/Prober.java Prober], which is responsible for inserting the probe into the system under test,  synchronising with its execution and reporting the result of the probe.
 
+=== !ComponentFinder ===
+
+A !ComponentFinder is a Probe that looks for components that match a set of criteria specified by Matchers.  The probe is successful if it finds at least one matching component.
+
+=== !ComponentSelector ===
+
+A !ComponentSelector is a !ComponentFinder that expects to find a single component.  It fails if it finds none or more than one.
+
 === Matcher ===
 
-Window Licker uses [http://code.google.com/p/hamcrest Hamcrest] Matchers to describe user interface components that are searched for by Probes.
+Window Licker uses [http://code.google.com/p/hamcrest Hamcrest] Matchers to describe user interface components that are searched for by !ComponentFinders.
 
 
 === Tracker ====
