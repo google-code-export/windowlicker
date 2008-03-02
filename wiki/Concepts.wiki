@@ -20,11 +20,11 @@ Probes are run asynchronously by a [http://code.google.com/p/windowlicker/source
 
 === !ComponentFinder ===
 
-A !ComponentFinder is a Probe that looks for components that match a set of criteria specified by Matchers.  The probe is successful if it finds at least one matching component.
+A !ComponentFinder is a Probe that looks for GUI components that match a set of criteria specified by Matchers.  The probe is successful if it finds at least one matching component.
 
 === !ComponentSelector ===
 
-A !ComponentSelector is a !ComponentFinder that expects to find a single component.  It fails if it finds none or more than one.
+A !ComponentSelector is a !ComponentFinder that expects to find a single GUI component.  It fails if it finds none or more than one.
 
 === Matcher ===
 
