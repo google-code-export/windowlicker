@@ -30,10 +30,9 @@ A !ComponentSelector is a !ComponentFinder that expects to find a single GUI com
 
 Window Licker uses [http://code.google.com/p/hamcrest Hamcrest] Matchers to describe user interface components that are searched for by !ComponentFinders.
 
+=== Query ===
 
-=== !ComponentQuery ===
-
-A !ComponentQuery returns the value of a component's property so that it can be matched by a Matcher.  It is used to make assertions about a component's state.
+A Query returns the value of a component's property so that it can be matched by a Matcher.  It is used to make assertions about a component's state.  Component Driver classes define static factory methods that return queries for the underlying component's properties.
 
 === Tracker ====
 
