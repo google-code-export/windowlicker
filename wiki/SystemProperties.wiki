@@ -5,7 +5,8 @@
 The default behaviour of Window Licker can be tweaked by setting system properties.
 
 || *Property* || *Purpose* || *Default* ||
-|| com.objogate.wl.poll-delay || The time that the Prober waits between polls of a probe || ||
-|| com.objogate.wl.timeout || The maximum time that the Prober will wait for a probe to execute successfully. || ||
+|| com.objogate.wl.poll-delay || The time in milliseconds that the Prober waits between polls of a probe || 100 ||
+|| com.objogate.wl.timeout || The maximum time in milliseconds that the Prober will wait for a probe to execute successfully. || 1000 ||
 || com.objogate.wl.keyboard || The name of the keyboard layout.|| The current input locale. ||
-|| windowlicker.end-of-test-pause || || ||
+
+All the system properties that Window Licker uses are defined as constants in the [http://code.google.com/p/windowlicker/source/browse/trunk/java/com/objogate/wl/SystemProperties.java SystemProperties] interface.
