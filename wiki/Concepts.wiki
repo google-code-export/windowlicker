@@ -31,6 +31,10 @@ A !ComponentSelector is a !ComponentFinder that expects to find a single GUI com
 Window Licker uses [http://code.google.com/p/hamcrest Hamcrest] Matchers to describe user interface components that are searched for by !ComponentFinders.
 
 
+=== ComponentQuery ===
+
+A ComponentQuery returns the value of a component's property so that it can be matched by a Matcher.  It is used to make assertions about a component's state.
+
 === Tracker ====
 
 An object that represents a, possibly moving, location on screen.  The mouse movement gesture uses a Tracker to define the destination of the movement so that the mouse can be used to interact with animated components.
