@@ -1,5 +1,5 @@
 #summary System properties used to configure Window Licker
-#labels Draft
+#labels Featured
 
 
 The default behaviour of Window Licker can be tweaked by setting system properties.
