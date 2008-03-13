@@ -1,0 +1,6 @@
+#summary How to use Window Licker to test that something does not happen
+#labels HowTo
+
+In progress...
+
+See [http://code.google.com/p/windowlicker/source/browse/trunk/calculator-example/end-to-end-tests/com/objogate/wl/example/calculator/tests/ExampleWhenNothingHappensTests.java the calculator example].
