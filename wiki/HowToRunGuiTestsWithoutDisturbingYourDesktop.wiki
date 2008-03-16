@@ -1,5 +1,5 @@
 #summary How to run GUI tests in a virtual display so that you can use the desktop without interfering with the test run
-#labels HowTo
+#labels HowTo,InProgress
 
 
 ... to be done ...
