@@ -1,19 +1,31 @@
 package com.objogate.wl.driver;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JTable;
+import static com.objogate.wl.gesture.Gestures.leftClickMouse;
+import static com.objogate.wl.gesture.Gestures.moveMouseTo;
+import static com.objogate.wl.gesture.Gestures.sequence;
+import static com.objogate.wl.gesture.Gestures.whileHoldingMouseButton;
+import static com.objogate.wl.gesture.Gestures.whileHoldingMultiSelect;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+
 import com.objogate.exception.Defect;
-import com.objogate.wl.*;
+import com.objogate.wl.ComponentManipulation;
+import com.objogate.wl.ComponentSelector;
+import com.objogate.wl.Gesture;
+import com.objogate.wl.Prober;
+import com.objogate.wl.Query;
 import com.objogate.wl.gesture.GesturePerformer;
 import com.objogate.wl.gesture.Gestures;
-import static com.objogate.wl.gesture.Gestures.*;
 import com.objogate.wl.gesture.Tracker;
 
 public class JTableDriver extends ComponentDriver<JTable> {
@@ -96,12 +108,33 @@ public class JTableDriver extends ComponentDriver<JTable> {
     }
 
     public Cell hasCell(final Matcher<? extends JComponent> matcher) {
-        WithCellMatcher withCellMatching = new WithCellMatcher(matcher);
+      CellMatcher cellMatcher = new CellMatcher(matcher);
         
-        is(withCellMatching);
+      is(new RenderedCellMatcher(cellMatcher));
 
-        return withCellMatching.foundCell;
+      return cellMatcher.foundCell.cell;
     }
+    
+    public void hasRowIncluding(Matcher<? extends JComponent> first, Matcher<? extends JComponent>... matchers) {
+      final int row = hasCell(first).row;
+      for (final Matcher<? extends JComponent> matcher: matchers) {
+        
+        is(new RenderedCellMatcher(
+            new TypeSafeMatcher<RenderedCell>() {
+              @Override public boolean matchesSafely(RenderedCell renderedCell) {
+                return renderedCell.cell.row == row
+                    && matcher.matches(renderedCell.rendered);
+              }
+              public void describeTo(Description description) {
+                description.appendText("on row " + row + " ")
+                           .appendDescriptionOf(matcher);
+              }
+            })
+          );
+        
+      }
+    }
+
 
     public Component editCell(int row, int col) {
         mouseOverCell(row, col);
@@ -289,8 +322,18 @@ public class JTableDriver extends ComponentDriver<JTable> {
         int modelIndex = table.getColumn(columnIdentifier).getModelIndex();
         return table.convertColumnIndexToView(modelIndex);
       }
-  }
+    }
 
+    public static class RenderedCell {
+      public final Cell cell;
+      public final Component rendered;
+
+      public RenderedCell(Cell cell, Component rendered) {
+        this.cell = cell;
+        this.rendered = rendered;
+      }
+    }
+    
     private class SelectedCellsMatcher extends TypeSafeMatcher<JTable> {
         public Cell unselectedCell;
         private final Cell[] cells;
@@ -315,23 +358,36 @@ public class JTableDriver extends ComponentDriver<JTable> {
         }
     }
     
-    private static final class WithCellMatcher extends TypeSafeMatcher<JTable> {
+    private static final class CellMatcher extends TypeSafeMatcher<RenderedCell> {
       private final Matcher<? extends JComponent> matcher;
-      Cell foundCell;
+      RenderedCell foundCell;
 
-      WithCellMatcher(Matcher<? extends JComponent> matcher) {
+      CellMatcher(Matcher<? extends JComponent> matcher) {
         this.matcher = matcher;
       }
 
-      @Override public boolean matchesSafely(JTable table) {
-          int rowCount = table.getRowCount();
-          int columnCount = table.getColumnCount();
+      @Override public boolean matchesSafely(RenderedCell renderedCell) {
+        if (matcher.matches(renderedCell.rendered)) {
+          foundCell = renderedCell;
+          return true;
+        }
+        return false;
+      }
 
-          for (int row = 0; row < rowCount; row++) {
-              for (int col = 0; col < columnCount; col++) {
+      public void describeTo(Description description) {
+          description.appendDescriptionOf(matcher);
+      }
+    }
+
+    private static final class RenderedCellMatcher extends TypeSafeMatcher<JTable> {
+      private final Matcher<RenderedCell> matcher;
+      RenderedCellMatcher(Matcher<RenderedCell> matcher) { this.matcher = matcher; }
+
+      @Override public boolean matchesSafely(JTable table) {
+          for (int row = 0; row < table.getRowCount(); row++) {
+              for (int col = 0; col < table.getColumnCount(); col++) {
                   Cell cell = cell(row, col);
-                  if (matcher.matches(JTableCellManipulation.render(table, cell))) {
-                      foundCell = cell;
+                  if (matcher.matches(new RenderedCell(cell, JTableCellManipulation.render(table, cell)))) {
                       return true;
                   }
               }
@@ -392,4 +448,5 @@ public class JTableDriver extends ComponentDriver<JTable> {
                      .appendText(" in cell at " + location);
       }
     }
+
 }
