@@ -79,7 +79,7 @@ public class JFileChooserDriverTest extends AbstractComponentDriverTest<JFileCho
     public void testCanClickDefaultApproveButton() throws InterruptedException {
         modalDialogShower.showInAnotherThread(null);
 
-        //The OK button isn't enabled without selecting a file on Auqa / Mac
+        //The OK button isn't enabled without selecting a file on Aqua / Mac
         driver.selectFile(testFile.getName());
         driver.approve();
 
