@@ -31,11 +31,11 @@ public class JTableCellManipulation implements ComponentManipulation<JTable> {
       this.editorComponent = editor(table, cell);
     }
 
-    private Component editor(JTable table, Cell rowCol) {
-        TableCellEditor tableCellEditor = table.getCellEditor(rowCol.row, rowCol.col);
+    private Component editor(JTable table, Cell cell) {
+        TableCellEditor tableCellEditor = table.getCellEditor(cell.row, cell.col);
         return tableCellEditor.getTableCellEditorComponent(table, 
-                  rowCol.valueFrom(table), 
-                  false, rowCol.row, rowCol.col);
+                  cell.valueFrom(table), 
+                  false, cell.row, cell.col);
     }
 
     public Component getRenderedCell() {
@@ -54,13 +54,13 @@ public class JTableCellManipulation implements ComponentManipulation<JTable> {
       return render(table, new Cell(row, col));
     }
     
-    public static Component render(JTable table, Location cell) { 
-        Cell rowCol = cell.asCellIn(table);
-        TableCellRenderer cellRenderer = table.getCellRenderer(rowCol.row, rowCol.col);
-        boolean isSelected = JTableDriver.arrayContains(table.getSelectedRows(), rowCol.row);
-        boolean hasFocus = isSelected && JTableDriver.arrayContains(table.getSelectedColumns(), rowCol.col);
+    public static Component render(JTable table, Location location) { 
+        Cell cell = location.asCellIn(table);
+        TableCellRenderer cellRenderer = table.getCellRenderer(cell.row, cell.col);
+        boolean isSelected = JTableDriver.arrayContains(table.getSelectedRows(), cell.row);
+        boolean hasFocus = isSelected && JTableDriver.arrayContains(table.getSelectedColumns(), cell.col);
         return cellRenderer.getTableCellRendererComponent(table, 
-                              rowCol.valueFrom(table), 
-                              isSelected, hasFocus, rowCol.row, rowCol.col);
+                              cell.valueFrom(table), 
+                              isSelected, hasFocus, cell.row, cell.col);
     }
 }
