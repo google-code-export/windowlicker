@@ -108,9 +108,9 @@ public class JTableDriver extends ComponentDriver<JTable> {
     }
 
     public Cell hasCell(final Matcher<? extends JComponent> matcher) {
-      CellMatcher cellMatcher = new CellMatcher(matcher);
+      RenderedCellMatcher cellMatcher = new RenderedCellMatcher(matcher);
         
-      is(new RenderedCellMatcher(cellMatcher));
+      is(new CellInTableMatcher(cellMatcher));
 
       return cellMatcher.foundCell.cell;
     }
@@ -118,7 +118,7 @@ public class JTableDriver extends ComponentDriver<JTable> {
     public void hasRowIncluding(Matcher<? extends JComponent> first, Matcher<? extends JComponent>... matchers) {
       final int row = hasCell(first).row;
       for (final Matcher<? extends JComponent> matcher: matchers) {
-        is(new RenderedCellMatcher(new RowMatcher(row, new CellMatcher(matcher))));
+        is(new CellInTableMatcher(new RowMatcher(row, new RenderedCellMatcher(matcher))));
       }
     }
 
@@ -343,11 +343,11 @@ public class JTableDriver extends ComponentDriver<JTable> {
         }
     }
     
-    private static final class CellMatcher extends TypeSafeMatcher<RenderedCell> {
+    private static final class RenderedCellMatcher extends TypeSafeMatcher<RenderedCell> {
       private final Matcher<? extends JComponent> matcher;
       RenderedCell foundCell;
 
-      CellMatcher(Matcher<? extends JComponent> matcher) {
+      RenderedCellMatcher(Matcher<? extends JComponent> matcher) {
         this.matcher = matcher;
       }
 
@@ -381,9 +381,9 @@ public class JTableDriver extends ComponentDriver<JTable> {
       }
     }
 
-    private static final class RenderedCellMatcher extends TypeSafeMatcher<JTable> {
+    private static final class CellInTableMatcher extends TypeSafeMatcher<JTable> {
       private final Matcher<RenderedCell> matcher;
-      RenderedCellMatcher(Matcher<RenderedCell> matcher) { this.matcher = matcher; }
+      CellInTableMatcher(Matcher<RenderedCell> matcher) { this.matcher = matcher; }
 
       @Override public boolean matchesSafely(JTable table) {
           for (int row = 0; row < table.getRowCount(); row++) {
