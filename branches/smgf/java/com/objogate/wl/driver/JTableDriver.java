@@ -118,23 +118,9 @@ public class JTableDriver extends ComponentDriver<JTable> {
     public void hasRowIncluding(Matcher<? extends JComponent> first, Matcher<? extends JComponent>... matchers) {
       final int row = hasCell(first).row;
       for (final Matcher<? extends JComponent> matcher: matchers) {
-        
-        is(new RenderedCellMatcher(
-            new TypeSafeMatcher<RenderedCell>() {
-              @Override public boolean matchesSafely(RenderedCell renderedCell) {
-                return renderedCell.cell.row == row
-                    && matcher.matches(renderedCell.rendered);
-              }
-              public void describeTo(Description description) {
-                description.appendText("on row " + row + " ")
-                           .appendDescriptionOf(matcher);
-              }
-            })
-          );
-        
+        is(new RenderedCellMatcher(new RowMatcher(row, new CellMatcher(matcher))));
       }
     }
-
 
     public Component editCell(int row, int col) {
         mouseOverCell(row, col);
@@ -239,7 +225,6 @@ public class JTableDriver extends ComponentDriver<JTable> {
       has(renderedCell(cell, labelText()), expectedText);
     }
 
-    
     public static <T> Query<JTable, T> renderedCell(Location cell, Query<Component, T> detail) {
       return new RenderedCellQuery<T>(cell, detail);
     }
@@ -376,6 +361,23 @@ public class JTableDriver extends ComponentDriver<JTable> {
 
       public void describeTo(Description description) {
           description.appendDescriptionOf(matcher);
+      }
+    }
+
+    private static class RowMatcher extends TypeSafeMatcher<RenderedCell> {
+      private final int row;
+      private final Matcher<RenderedCell> matcher;
+
+      RowMatcher(int row, Matcher<RenderedCell> matcher) { 
+        this.row = row;
+        this.matcher = matcher; 
+      }
+      @Override public boolean matchesSafely(RenderedCell renderedCell) {
+        return row == renderedCell.cell.row && matcher.matches(renderedCell);
+      }
+      public void describeTo(Description description) {
+        description.appendText("on row " + row + " ")
+                   .appendDescriptionOf(matcher);
       }
     }
 
