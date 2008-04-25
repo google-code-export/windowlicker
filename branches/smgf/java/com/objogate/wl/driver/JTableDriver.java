@@ -194,20 +194,20 @@ public class JTableDriver extends ComponentDriver<JTable> {
         cellRenderedWithText(cell(row, col), expectedText);
     }
 
-    public void cellHasForegroundColor(final AbstractCell cell, Matcher<Color> foregroundColor) {
+    public void cellHasForegroundColor(final Location cell, Matcher<Color> foregroundColor) {
       has(renderedCell(cell, foregroundColor()), foregroundColor);
     }
     
-    public void cellHasBackgroundColor(final AbstractCell cell, Matcher<Color> backgroundColor) {
+    public void cellHasBackgroundColor(final Location cell, Matcher<Color> backgroundColor) {
       has(renderedCell(cell, backgroundColor()), backgroundColor);
     }
 
-    public void cellRenderedWithText(final AbstractCell cell, Matcher<String> expectedText) {
+    public void cellRenderedWithText(final Location cell, Matcher<String> expectedText) {
       has(renderedCell(cell, labelText()), expectedText);
     }
 
     
-    public static <T> Query<JTable, T> renderedCell(AbstractCell cell, Query<Component, T> detail) {
+    public static <T> Query<JTable, T> renderedCell(Location cell, Query<Component, T> detail) {
       return new RenderedCellQuery<T>(cell, detail);
     }
     
@@ -249,40 +249,37 @@ public class JTableDriver extends ComponentDriver<JTable> {
         }
       };
     }
-    public static abstract class AbstractCell {
-      public final int row;
 
-      public AbstractCell(int row) { this.row = row; }
-      public abstract Cell asCellIn(JTable table);
+    public interface Location {
+      Cell asCellIn(JTable table);
     }
     
-    
-    public static class Cell extends AbstractCell {
+    public static class Cell implements Location {
+        public final int row;
         public final int col;
 
         public Cell(int row, int col) {
-          super(row);
+          this.row = row;
           this.col = col;
         }
-        public Object valueFrom(JTable table) {
-          return table.getValueAt(row, col);
-        }
-        @Override public Cell asCellIn(JTable unused) { return this; }
+        public Object valueFrom(JTable table) { return table.getValueAt(row, col); }
+        public Cell asCellIn(JTable unused) { return this; }
 
         @Override public String toString() {
             return "r" + row + " x " + "c" + col;
         }
     }
 
-    public static class IndentifierCell extends AbstractCell {
+    public static class IndentifierCell implements Location {
+      private final int row;
       public final Object columnIdentifier;
 
       public IndentifierCell(int row, Object columnIdentifier) {
-        super(row);
+        this.row = row;
         this.columnIdentifier = columnIdentifier;
       }
 
-      @Override public Cell asCellIn(JTable table) {
+      public Cell asCellIn(JTable table) {
         return new Cell(row, viewIndex(table));
       }
       @Override public String toString() {
@@ -378,10 +375,10 @@ public class JTableDriver extends ComponentDriver<JTable> {
     }
 
     private static class RenderedCellQuery<T> implements Query<JTable, T> {
-      private final AbstractCell location;
+      private final Location location;
       private final Query<Component, T> detail;
 
-      public RenderedCellQuery(AbstractCell location, Query<Component, T> detail) {
+      public RenderedCellQuery(Location location, Query<Component, T> detail) {
           this.location = location;
           this.detail = detail;
       }

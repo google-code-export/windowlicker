@@ -7,12 +7,12 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
 import com.objogate.wl.ComponentManipulation;
-import com.objogate.wl.driver.JTableDriver.AbstractCell;
 import com.objogate.wl.driver.JTableDriver.Cell;
 import com.objogate.wl.driver.JTableDriver.IndentifierCell;
+import com.objogate.wl.driver.JTableDriver.Location;
 
 public class JTableCellManipulation implements ComponentManipulation<JTable> {
-    private final JTableDriver.AbstractCell location;
+    private final Location location;
 
     private Component renderedCell;
     private Component editorComponent;
@@ -54,7 +54,7 @@ public class JTableCellManipulation implements ComponentManipulation<JTable> {
       return render(table, new Cell(row, col));
     }
     
-    public static Component render(JTable table, AbstractCell cell) { 
+    public static Component render(JTable table, Location cell) { 
         Cell rowCol = cell.asCellIn(table);
         TableCellRenderer cellRenderer = table.getCellRenderer(rowCol.row, rowCol.col);
         boolean isSelected = JTableDriver.arrayContains(table.getSelectedRows(), rowCol.row);
