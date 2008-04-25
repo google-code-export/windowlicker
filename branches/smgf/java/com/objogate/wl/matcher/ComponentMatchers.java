@@ -3,6 +3,7 @@ package com.objogate.wl.matcher;
 import javax.swing.AbstractButton;
 import java.awt.Component;
 import org.hamcrest.Matcher;
+import static org.hamcrest.Matchers.equalTo;
 
 //TODO (nat): move these to the appropriate component driver classes
 public class ComponentMatchers {
@@ -16,6 +17,10 @@ public class ComponentMatchers {
 
     public static Matcher<Component> withFocus() {
         return new HasFocusMatcher();
+    }
+
+    public static JLabelTextMatcher withLabelText(String text) {
+      return new JLabelTextMatcher(equalTo(text));
     }
 
     public static JLabelTextMatcher withLabelText(Matcher<String> text) {
