@@ -178,20 +178,12 @@ public class JTableDriver extends ComponentDriver<JTable> {
       cellHasBackgroundColor(cell(row, col), backgroundColor);
     }
     
-    public void cellHasBackgroundColor(final AbstractCell cell, Matcher<Color> backgroundColor) {
-      has(cellQuery(cell, backgroundColor()), backgroundColor);
-    }
-
     public void cellHasForegroundColor(final int row, final Object columnIdentifier, Matcher<Color> foregroundColor) {
       cellHasForegroundColor(cell(row, columnIdentifier), foregroundColor);
     }
 
     public void cellHasForegroundColor(final int row, final int col, Matcher<Color> foregroundColor) {
       cellHasForegroundColor(cell(row, col), foregroundColor);
-    }
-    
-    public void cellHasForegroundColor(final AbstractCell cell, Matcher<Color> foregroundColor) {
-        has(cellQuery(cell, foregroundColor()), foregroundColor);
     }
     
     public void cellRenderedWithText(final int row, final Object columnIdentifier, Matcher<String> expectedText) {
@@ -202,13 +194,21 @@ public class JTableDriver extends ComponentDriver<JTable> {
         cellRenderedWithText(cell(row, col), expectedText);
     }
 
+    public void cellHasForegroundColor(final AbstractCell cell, Matcher<Color> foregroundColor) {
+      has(renderedCell(cell, foregroundColor()), foregroundColor);
+    }
+    
+    public void cellHasBackgroundColor(final AbstractCell cell, Matcher<Color> backgroundColor) {
+      has(renderedCell(cell, backgroundColor()), backgroundColor);
+    }
+
     public void cellRenderedWithText(final AbstractCell cell, Matcher<String> expectedText) {
-      has(new CellTextQuery(cell), expectedText);
+      has(renderedCell(cell, labelText()), expectedText);
     }
 
     
-    public static <T> Query<JTable, T> cellQuery(AbstractCell cell, Query<Component, T> detail) {
-      return new CellQuery<T>(cell, detail);
+    public static <T> Query<JTable, T> renderedCell(AbstractCell cell, Query<Component, T> detail) {
+      return new RenderedCellQuery<T>(cell, detail);
     }
     
     public static Query<Component, Color> foregroundColor() {
@@ -225,22 +225,6 @@ public class JTableDriver extends ComponentDriver<JTable> {
       };
     }
 
-    public static Query<Component, String> labelText(final AbstractCell location) {
-      return new Query<Component, String>() {
-        public String query(Component cell) {
-          if (cell instanceof JLabel) {
-            JLabel label = (JLabel) cell;
-            return label.getText();
-          } else {
-              throw new Defect("Rendered component in cell at " + location + " is not a JLabel but a " + cell.getClass().getName());
-          }
-        }
-
-        public void describeTo(Description description) {
-            description.appendText("text");
-        }
-      };
-    }
     public static IndentifierCell cell(final int row, final Object columnIdentifier) {
       return new IndentifierCell(row, columnIdentifier);
     }
@@ -249,6 +233,22 @@ public class JTableDriver extends ComponentDriver<JTable> {
       return new Cell(row, col);
     }
 
+    public static Query<Component, String> labelText() {
+      return new Query<Component, String>() {
+        public String query(Component cell) {
+          if (cell instanceof JLabel) {
+            JLabel label = (JLabel) cell;
+            return label.getText();
+          } else {
+              throw new Defect("Rendered component is not a JLabel but a " + cell.getClass().getName());
+          }
+        }
+
+        public void describeTo(Description description) {
+            description.appendText("text");
+        }
+      };
+    }
     public static abstract class AbstractCell {
       public final int row;
 
@@ -332,9 +332,9 @@ public class JTableDriver extends ComponentDriver<JTable> {
 
           for (int row = 0; row < rowCount; row++) {
               for (int col = 0; col < columnCount; col++) {
-                  Component renderedCell = JTableCellManipulation.render(table, row, col);
-                  if (matcher.matches(renderedCell)) {
-                      foundCell = new Cell(row, col);
+                  Cell cell = cell(row, col);
+                  if (matcher.matches(JTableCellManipulation.render(table, cell))) {
+                      foundCell = cell;
                       return true;
                   }
               }
@@ -377,45 +377,22 @@ public class JTableDriver extends ComponentDriver<JTable> {
         }
     }
 
-    private static class CellQuery<T> implements Query<JTable, T> {
+    private static class RenderedCellQuery<T> implements Query<JTable, T> {
       private final AbstractCell location;
       private final Query<Component, T> detail;
 
-      public CellQuery(AbstractCell location, Query<Component, T> detail) {
+      public RenderedCellQuery(AbstractCell location, Query<Component, T> detail) {
           this.location = location;
           this.detail = detail;
       }
 
       public T query(JTable table) {
-          return detail.query(JTableCellManipulation.render(table, location.asCellIn(table)));
+          return detail.query(JTableCellManipulation.render(table, location));
       }
 
       public void describeTo(Description description) {
           description.appendDescriptionOf(detail)
                      .appendText(" in cell at " + location);
       }
-    }
-
-    private static class CellTextQuery implements Query<JTable, String> {
-        private final AbstractCell location;
-
-        public CellTextQuery(AbstractCell location) {
-            this.location = location;
-        }
-
-        public String query(JTable table) {
-            Component cell = JTableCellManipulation.render(table, location.asCellIn(table));
-
-            if (cell instanceof JLabel) {
-                JLabel label = (JLabel) cell;
-                return label.getText();
-            } else {
-                throw new Defect("Rendered component in cell at " + location + " is not a JLabel but a " + cell.getClass().getName());
-            }
-        }
-
-        public void describeTo(Description description) {
-            description.appendText("text in cell at " + location);
-        }
     }
 }
