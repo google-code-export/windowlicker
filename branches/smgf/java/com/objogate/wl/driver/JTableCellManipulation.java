@@ -8,7 +8,7 @@ import javax.swing.table.TableCellRenderer;
 
 import com.objogate.wl.ComponentManipulation;
 import com.objogate.wl.driver.JTableDriver.Cell;
-import com.objogate.wl.driver.JTableDriver.IndentifierCell;
+import com.objogate.wl.driver.JTableDriver.IdentifierCell;
 import com.objogate.wl.driver.JTableDriver.Location;
 
 public class JTableCellManipulation implements ComponentManipulation<JTable> {
@@ -22,7 +22,7 @@ public class JTableCellManipulation implements ComponentManipulation<JTable> {
     }
 
     public JTableCellManipulation(int row, Object columnIdentifier) {
-      this.location = new IndentifierCell(row, columnIdentifier);
+      this.location = new IdentifierCell(row, columnIdentifier);
     }
 
     public void manipulate(JTable table) {
@@ -47,7 +47,7 @@ public class JTableCellManipulation implements ComponentManipulation<JTable> {
     }
 
     public static Component render(JTable table, int row, Object columIdentifier) {
-      return render(table, new IndentifierCell(row, columIdentifier).asCellIn(table));
+      return render(table, new IdentifierCell(row, columIdentifier).asCellIn(table));
     }
 
     public static Component render(JTable table, int row, int col) {

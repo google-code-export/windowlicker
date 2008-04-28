@@ -243,8 +243,8 @@ public class JTableDriver extends ComponentDriver<JTable> {
       };
     }
 
-    public static IndentifierCell cell(final int row, final Object columnIdentifier) {
-      return new IndentifierCell(row, columnIdentifier);
+    public static IdentifierCell cell(final int row, final Object columnIdentifier) {
+      return new IdentifierCell(row, columnIdentifier);
     }
 
     public static Cell cell(int row, int col) {
@@ -288,11 +288,11 @@ public class JTableDriver extends ComponentDriver<JTable> {
         }
     }
 
-    public static class IndentifierCell implements Location {
+    public static class IdentifierCell implements Location {
       private final int row;
       public final Object columnIdentifier;
 
-      public IndentifierCell(int row, Object columnIdentifier) {
+      public IdentifierCell(int row, Object columnIdentifier) {
         this.row = row;
         this.columnIdentifier = columnIdentifier;
       }
