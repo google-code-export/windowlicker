@@ -115,13 +115,6 @@ public class JTableDriver extends ComponentDriver<JTable> {
       return cellMatcher.foundCell.cell;
     }
     
-    public void hasRowIncluding(Matcher<? extends JComponent> first, Matcher<? extends JComponent>... matchers) {
-      final int row = hasCell(first).row;
-      for (final Matcher<? extends JComponent> matcher: matchers) {
-        is(new CellInTableMatcher(new RowMatcher(row, new RenderedCellMatcher(matcher))));
-      }
-    }
-
     public Component editCell(int row, int col) {
         mouseOverCell(row, col);
         performGesture(Gestures.doubleClickMouse());
@@ -254,12 +247,7 @@ public class JTableDriver extends ComponentDriver<JTable> {
     public static Query<Component, String> labelText() {
       return new Query<Component, String>() {
         public String query(Component cell) {
-          if (cell instanceof JLabel) {
-            JLabel label = (JLabel) cell;
-            return label.getText();
-          } else {
-              throw new Defect("Rendered component is not a JLabel but a " + cell.getClass().getName());
-          }
+          return ((JLabel) cell).getText();
         }
 
         public void describeTo(Description description) {
@@ -364,23 +352,6 @@ public class JTableDriver extends ComponentDriver<JTable> {
       }
     }
 
-    private static class RowMatcher extends TypeSafeMatcher<RenderedCell> {
-      private final int row;
-      private final Matcher<RenderedCell> matcher;
-
-      RowMatcher(int row, Matcher<RenderedCell> matcher) { 
-        this.row = row;
-        this.matcher = matcher; 
-      }
-      @Override public boolean matchesSafely(RenderedCell renderedCell) {
-        return row == renderedCell.cell.row && matcher.matches(renderedCell);
-      }
-      public void describeTo(Description description) {
-        description.appendText("on row " + row + " ")
-                   .appendDescriptionOf(matcher);
-      }
-    }
-
     private static final class CellInTableMatcher extends TypeSafeMatcher<JTable> {
       private final Matcher<RenderedCell> matcher;
       CellInTableMatcher(Matcher<RenderedCell> matcher) { this.matcher = matcher; }
@@ -422,11 +393,9 @@ public class JTableDriver extends ComponentDriver<JTable> {
         public ColumnManipulation(int col) {
             this.col = col;
         }
-
         public void manipulate(JTable component) {
             midpoint = JTableHeaderDriver.ColumnManipulation.midpointOfColumn(col, component.getColumnModel());
         }
-
         public int getMidPoint() {
             return midpoint;
         }

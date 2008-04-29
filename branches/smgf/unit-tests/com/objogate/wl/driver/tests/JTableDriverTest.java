@@ -2,8 +2,7 @@ package com.objogate.wl.driver.tests;
 
 import static com.objogate.wl.driver.JTableDriver.cell;
 import static com.objogate.wl.matcher.ComponentMatchers.withLabelText;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.equalTo;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -44,25 +43,6 @@ public class JTableDriverTest extends AbstractComponentDriverTest<JTableDriver> 
     detectsHasCellMatching() {
         driver.hasCell(withLabelText(equalTo("1x1")));
     }
-
-    @SuppressWarnings("unchecked")
-    @Test public void 
-    detectsRowWithCellsMatching() {
-        driver.hasRowIncluding(withLabelText(equalTo("2x1")), withLabelText(equalTo("2x3")));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test public void 
-    reportsRowWithCellsNotMatching() {
-      try {
-        driver.hasRowIncluding(withLabelText(equalTo("2x1")), withLabelText(equalTo("1x3")));
-      } catch (AssertionError failure) {
-        assertThat(failure.getMessage(), containsString("not with cell on row 2 with text \"1x3\""));
-        return;
-      }
-      fail("Should have thrown exception");
-    }
-
 
     @Test public void 
     matchesOnCellColour() {
