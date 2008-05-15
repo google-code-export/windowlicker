@@ -11,4 +11,4 @@ Add this to the `<junit>` ant task
 }}}
 
 
-The code is not currently packaged as part of WindowLicker, however you can see the code required [http://code.google.com/p/windowlicker/source/browse/trunk/tools/src/java/com/objogate/wl/build/RecordMyDesktopWrapper.java here] and [http://code.google.com/p/windowlicker/source/browse/trunk/tools/src/java/com/objogate/wl/build/RecordingFormatter.java here]
+The code is not currently packaged as part of Window Licker, however you can see the code required [http://code.google.com/p/windowlicker/source/browse/trunk/tools/src/java/com/objogate/wl/build/RecordMyDesktopWrapper.java here] and [http://code.google.com/p/windowlicker/source/browse/trunk/tools/src/java/com/objogate/wl/build/RecordingFormatter.java here]
