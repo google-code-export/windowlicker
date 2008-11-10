@@ -1,5 +1,5 @@
 #summary How to record the GUI activity of failing tests as video files to help diagnose test failures
-#labels HowTo,InProgress
+#labels HowTo
 
 
 If you are using Linux, you can use the listener feature of JUnit to wrap "recordmydesktop", showing you what happens when the tests are running.
