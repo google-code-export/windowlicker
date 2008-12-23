@@ -1,35 +1,19 @@
 package com.objogate.wl.swing.matcher;
 
 import java.util.Collection;
-import org.hamcrest.Description;
+
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
-import static org.hamcrest.Matchers.equalTo;
-import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.Matchers;
 
-public class CollectionSizeMatcher<C extends Collection<?>> extends TypeSafeMatcher<C> {
-    private final Matcher<Integer> sizeMatcher;
-
-    public CollectionSizeMatcher(Matcher<Integer> sizeMatcher) {
-        this.sizeMatcher = sizeMatcher;
-    }
-
-    @Override
-    public boolean matchesSafely(C collection) {
-        return sizeMatcher.matches(collection.size());
-    }
-
-    public void describeTo(Description description) {
-        description.appendText("a collection with size ").appendDescriptionOf(sizeMatcher);
+public class CollectionSizeMatcher {
+    @Factory
+    public static Matcher<? super Collection<? extends Object>> ofSize(Matcher<? super Integer> sizeMatcher) {
+        return Matchers.hasSize(sizeMatcher);
     }
 
     @Factory
-    public static <C extends Collection<?>> Matcher<C> ofSize(Matcher<Integer> sizeMatcher) {
-        return new CollectionSizeMatcher<C>(sizeMatcher);
-    }
-
-    @Factory
-    public static <C extends Collection<?>> Matcher<C> ofSize(int expectedSize) {
-        return ofSize(equalTo(expectedSize));
+    public static Matcher<? super Collection<? extends Object>> ofSize(int expectedSize) {
+        return Matchers.hasSize(expectedSize);
     }
 }

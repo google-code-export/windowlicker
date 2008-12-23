@@ -8,5 +8,5 @@ public interface TextQuery {
      *
      * @param matcher What to match for
      */
-    void hasText(Matcher<String> matcher);
+    void hasText(Matcher<? super String> matcher);
 }

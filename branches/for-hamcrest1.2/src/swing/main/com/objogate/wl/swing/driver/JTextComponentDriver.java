@@ -39,7 +39,7 @@ public class JTextComponentDriver<T extends JTextComponent> extends ComponentDri
         hasText(equalTo(expectedText));
     }
 
-    public void hasText(Matcher<String> matcher) {
+    public void hasText(Matcher<? super String> matcher) {
         has(new Query<T, String>() {
             public String query(T component) {
                 return component.getText();
@@ -55,7 +55,7 @@ public class JTextComponentDriver<T extends JTextComponent> extends ComponentDri
         hasSelectedText(equalTo(expected));
     }
 
-    public void hasSelectedText(Matcher<String> matcher) {
+    public void hasSelectedText(Matcher<? super String> matcher) {
         has(new Query<T, String>() {
             public String query(T component) {
                 return component.getSelectedText();

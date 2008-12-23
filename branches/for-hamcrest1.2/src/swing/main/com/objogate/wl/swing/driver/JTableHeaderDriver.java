@@ -14,9 +14,9 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.hamcrest.Description;
+import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.hamcrest.TypeSafeMatcher;
 
 import com.objogate.exception.Defect;
 import com.objogate.wl.Prober;
@@ -192,17 +192,14 @@ public class JTableHeaderDriver extends ComponentDriver<JTableHeader> {
     }
    
     
-    private static final class TableHeadersMatcher extends TypeSafeMatcher<JTableHeader> {
-      private final Matcher<Iterable<? extends Component>> matcher;
-      TableHeadersMatcher(Matcher<Iterable<? extends Component>> matcher) { this.matcher = matcher; }
-
-      @Override public boolean matchesSafely(JTableHeader tableHeader) {
-          return matcher.matches(HeadersIterator.asIterable(tableHeader));
+    private static final class TableHeadersMatcher extends FeatureMatcher<JTableHeader, Iterable<? extends Component>> {
+      TableHeadersMatcher(Matcher<Iterable<? extends Component>> matcher) { 
+        super(matcher, "with headers", "headers were");
       }
 
-      public void describeTo(Description description) {
-          description.appendText("with headers ")
-                     .appendDescriptionOf(matcher);
+      @Override
+      protected Iterable<? extends Component> featureValueOf(JTableHeader actual) {
+        return HeadersIterator.asIterable(actual);
       }
     }
     

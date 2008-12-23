@@ -1,8 +1,8 @@
 package com.objogate.wl.swing.driver;
 
 import javax.swing.JToggleButton;
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
+
+import com.objogate.wl.swing.matcher.AbstractButtonTextMatcher;
 
 class WindowsFileChooserUIDriver extends MetalFileChooserUIDriver {
     private static final String DESKTOP_BUTTON_TEXT = "Desktop";
@@ -16,7 +16,7 @@ class WindowsFileChooserUIDriver extends MetalFileChooserUIDriver {
     @Override
     public void desktop() {
         new AbstractButtonDriver<JToggleButton>(parentOrOwner, JToggleButton.class,
-                new HtmlToggleButtonMatcher(DESKTOP_BUTTON_TEXT)).click();
+                new AbstractButtonTextMatcher<JToggleButton>(wrapInWindowsHtml(DESKTOP_BUTTON_TEXT))).click();
     }
 
     @Override
@@ -28,27 +28,10 @@ class WindowsFileChooserUIDriver extends MetalFileChooserUIDriver {
     @Override
     public void documents() {
         new AbstractButtonDriver<JToggleButton>(parentOrOwner, JToggleButton.class,
-                new HtmlToggleButtonMatcher(HOME_BUTTON_TEXT)).click();
+            new AbstractButtonTextMatcher<JToggleButton>(wrapInWindowsHtml(HOME_BUTTON_TEXT))).click();
     }
 
-    private class HtmlToggleButtonMatcher extends TypeSafeMatcher<JToggleButton> {
-        private String desktopButtonText;
-
-        public HtmlToggleButtonMatcher(String desktopButtonText) {
-            this.desktopButtonText = desktopButtonText;
-        }
-
-        @Override
-        public boolean matchesSafely(JToggleButton jButton) {
-            return jButton.getText().equals(wrapInWindowsHtml(desktopButtonText));
-        }
-
-        public void describeTo(Description description) {
-            description.appendText("Button with text '" + wrapInWindowsHtml(desktopButtonText) + "'");
-        }
-
-        private String wrapInWindowsHtml(String buttonText) {
-            return "<html><center>" + buttonText + "</center></html>";
-        }
-    }
+    private String wrapInWindowsHtml(String buttonText) {
+      return "<html><center>" + buttonText + "</center></html>";
+  }
 }

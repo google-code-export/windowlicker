@@ -13,4 +13,9 @@ public class ShowingOnScreenMatcher extends TypeSafeMatcher<Component> {
     public void describeTo(Description description) {
         description.appendText("showing on screen");
     }
+
+    @Override
+    protected void describeMismatchSafely(Component item, Description mismatchDescription) {
+      mismatchDescription.appendText("was not showing on screen");
+    }
 }

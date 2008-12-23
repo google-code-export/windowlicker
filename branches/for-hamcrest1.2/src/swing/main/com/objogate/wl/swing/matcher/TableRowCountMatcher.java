@@ -1,39 +1,28 @@
 package com.objogate.wl.swing.matcher;
 
-import javax.swing.JTable;
-import java.awt.Component;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import static org.hamcrest.Matchers.equalTo;
-import org.hamcrest.TypeSafeMatcher;
 
-public class TableRowCountMatcher extends TypeSafeMatcher<Component> {
-    private final Matcher<Integer> rowCountMatcher;
+import javax.swing.JTable;
 
-    public TableRowCountMatcher(Matcher<Integer> rowCountMatcher) {
-        this.rowCountMatcher = rowCountMatcher;
+import org.hamcrest.FeatureMatcher;
+import org.hamcrest.Matcher;
+
+public class TableRowCountMatcher extends FeatureMatcher<JTable, Integer> {
+    public TableRowCountMatcher(Matcher<? super Integer> rowCountMatcher) {
+       super(rowCountMatcher, "table with row count", "row count");
     }
 
     @Override
-    public boolean matchesSafely(Component component) {
-        return component instanceof JTable
-                && matchesSafely((JTable) component);
+    protected Integer featureValueOf(JTable actual) {
+      return actual.getRowCount();
     }
 
-    public boolean matchesSafely(JTable table) {
-        return rowCountMatcher.matches(table.getRowCount());
-    }
-
-    public void describeTo(Description description) {
-        description.appendText("with row count ");
-        rowCountMatcher.describeTo(description);
-    }
-
-    public static Matcher<Component> withRowCount(int n) {
+    public static Matcher<JTable> withRowCount(int n) {
         return withRowCount(equalTo(n));
     }
 
-    public static Matcher<Component> withRowCount(Matcher<Integer> rowCountMatcher) {
+    public static Matcher<JTable> withRowCount(Matcher<? super Integer> rowCountMatcher) {
         return new TableRowCountMatcher(rowCountMatcher);
     }
+
 }

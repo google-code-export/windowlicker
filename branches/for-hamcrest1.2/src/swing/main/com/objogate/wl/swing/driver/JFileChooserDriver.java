@@ -1,5 +1,7 @@
 package com.objogate.wl.swing.driver;
 
+import static org.hamcrest.Matchers.equalTo;
+
 import java.awt.Component;
 import java.awt.HeadlessException;
 import java.io.File;
@@ -10,8 +12,8 @@ import javax.swing.JFrame;
 import javax.swing.text.JTextComponent;
 
 import org.hamcrest.Description;
+import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 
 import com.objogate.exception.Defect;
 import com.objogate.wl.Probe;
@@ -93,27 +95,15 @@ public class JFileChooserDriver extends ComponentDriver<JFileChooser> {
     }
 
     public void currentDirectory(final File expectedDir) {
-        currentDirectory(new TypeSafeMatcher<File>() {
-            @Override
-            public boolean matchesSafely(File file) {
-                try {
-                    return file.getCanonicalPath().equals(expectedDir.getCanonicalPath());
-                } catch (IOException e) {
-                    throw new Defect("Cannot get path of directory " + expectedDir);
-                }
-            }
-
-            public void describeTo(Description description) {
-                try {
-                    description.appendText(expectedDir.getCanonicalPath());
-                } catch (IOException e) {
-                    throw new Defect("Cannot get path of directory " + expectedDir);
-                }
-            }
+        currentDirectory(new FeatureMatcher<File, String>(equalTo(canonicalPathOf(expectedDir)), "current directory", "current directory") {
+          @Override
+          protected String featureValueOf(File actual) {
+            return canonicalPathOf(actual);
+          }
         });
     }
 
-    public void currentDirectory(final Matcher<File> matcher) {
+    public void currentDirectory(final Matcher<? super File> matcher) {
         check(new Probe() {
             File currentDirectory;
 
@@ -145,4 +135,13 @@ public class JFileChooserDriver extends ComponentDriver<JFileChooser> {
         if (parentComponent instanceof JFrame) return (JFrame) parentComponent;
         return rootFrameFor(parentComponent.getParent());
     }
+    
+    private static String canonicalPathOf(File path) {
+      try {
+        return path.getCanonicalPath();
+      } catch (IOException e) {
+        throw new Defect("Cannot get path of directory " + path);
+      }
+    }
 }
+

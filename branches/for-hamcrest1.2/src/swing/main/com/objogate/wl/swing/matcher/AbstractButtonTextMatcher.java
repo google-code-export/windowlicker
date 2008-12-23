@@ -1,24 +1,30 @@
 package com.objogate.wl.swing.matcher;
 
 import javax.swing.AbstractButton;
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
 
-public class AbstractButtonTextMatcher<T extends AbstractButton> extends TypeSafeMatcher<T> {
-    private String text;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
+
+public class AbstractButtonTextMatcher<T extends AbstractButton> extends TypeSafeDiagnosingMatcher<T> {
+    private Matcher<? super String> equalToText;
 
     public AbstractButtonTextMatcher(String text) {
-        this.text = text;
+        this.equalToText = Matchers.equalTo(text);
     }
 
     @Override
-    public boolean matchesSafely(T buttonAlike) {
-        return text.equals(buttonAlike.getText());
+    protected boolean matchesSafely(T buttonAlike, Description mismatchDescription) {
+      String value = buttonAlike.getText();
+      if (equalToText.matches(value)) {
+        return true;
+      }
+      equalToText.describeMismatch(value, mismatchDescription);
+      return false;
     }
 
     public void describeTo(Description description) {
-        description.appendText("with text matching '");
-        description.appendText(text);
-        description.appendText("'");
+        description.appendText("with text ").appendDescriptionOf(equalToText);
     }
 }
