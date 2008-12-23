@@ -19,7 +19,7 @@ public class JFrameDriverTest extends AbstractComponentDriverTest<JFrameDriver> 
 
     @Test
     public void assertsTitleText() throws Exception {
-        frameDriver.hasTitle("JFrameDriverTest");
+        frameDriver.hasTitle(getClass().getSimpleName());
     }
 
     @Test

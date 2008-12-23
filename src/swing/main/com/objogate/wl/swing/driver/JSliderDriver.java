@@ -16,8 +16,9 @@ import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 
 import org.hamcrest.Description;
+import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 import com.objogate.wl.Prober;
 import com.objogate.wl.swing.ComponentManipulation;
@@ -38,46 +39,43 @@ public class JSliderDriver extends ComponentDriver<JSlider> {
         super(parentOrOwner, componentType, matchers);
     }
 
-    public void hasValue(final Matcher<Integer> matcher) {
-        is(new TypeSafeMatcher<JSlider>() {
+    public void hasValue(final Matcher<? super Integer> matcher) {
+        is(new TypeSafeDiagnosingMatcher<JSlider>() {
             @Override
-            public boolean matchesSafely(JSlider jSlider) {
-                return !jSlider.getValueIsAdjusting() && matcher.matches(jSlider.getValue());
+            protected boolean matchesSafely(JSlider jSlider, Description mismatchDescription) {
+              if (jSlider.getValueIsAdjusting()) {
+                mismatchDescription.appendText("slider was adjusting");
+                return false;
+              }
+              int value = jSlider.getValue();
+              if (! matcher.matches(value) ) {
+                mismatchDescription.appendText("value was").appendValue(value);
+                return false;
+              }
+              return true;
+            }
+            public void describeTo(Description description) {
+                description.appendText("slider is not adjusting and has value matching ")
+                           .appendDescriptionOf(matcher);
             }
 
-            public void describeTo(Description description) {
-                description.appendText("slider is not adjusting & has value matching ");
-                description.appendDescriptionOf(matcher);
-            }
         });
     }
 
-    public void hasMaximum(final Matcher<Integer> matcher) {
-        is(new TypeSafeMatcher<JSlider>() {
-            @Override
-            public boolean matchesSafely(JSlider jSlider) {
-                return matcher.matches(jSlider.getMaximum());
-            }
-
-            public void describeTo(Description description) {
-                description.appendText("slider has maximum matching ");
-                description.appendDescriptionOf(matcher);
-            }
-        });
+    public void hasMaximum(final Matcher<? super Integer> matcher) {
+      is(new FeatureMatcher<JSlider, Integer>(matcher, "slider with maximum", "maximum") {
+        @Override
+        protected Integer featureValueOf(JSlider actual) {
+          return actual.getMaximum();
+        }});
     }
 
-    public void hasMinimum(final Matcher<Integer> matcher) {
-        is(new TypeSafeMatcher<JSlider>() {
-            @Override
-            public boolean matchesSafely(JSlider jSlider) {
-                return matcher.matches(jSlider.getMinimum());
-            }
-
-            public void describeTo(Description description) {
-                description.appendText("slider minimum matching ");
-                description.appendDescriptionOf(matcher);
-            }
-        });
+    public void hasMinimum(final Matcher<? super Integer> matcher) {
+      is(new FeatureMatcher<JSlider, Integer>(matcher, "slider with minimum", "minimum") {
+        @Override
+        protected Integer featureValueOf(JSlider actual) {
+          return actual.getMinimum();
+        }});
     }
 
     public void makeValue(int value) {

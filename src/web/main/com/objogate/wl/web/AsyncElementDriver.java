@@ -27,7 +27,7 @@ public class AsyncElementDriver implements SelfDescribing {
         this.criteria = criteria;
     }
 
-    public void assertText(final Matcher<String> textMatcher) {
+    public void assertText(final Matcher<? super String> textMatcher) {
         prober.check(new ElementPropertyProbe(this, "text", textMatcher) {
             @Override
             protected String propertyValue(WebElement e) {

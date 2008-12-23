@@ -1,23 +1,17 @@
 package com.objogate.wl.swing.matcher;
 
 import javax.swing.JButton;
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
 
-public class ButtonTextMatcher extends TypeSafeMatcher<JButton> {
-    private final String expectedText;
+import org.hamcrest.FeatureMatcher;
+import org.hamcrest.Matchers;
 
+public class ButtonTextMatcher extends FeatureMatcher<JButton, String> {
     public ButtonTextMatcher(String expectedText) {
-        this.expectedText = expectedText;
+        super(Matchers.equalTo(expectedText), "JButton with text", "text");
     }
 
     @Override
-    public boolean matchesSafely(JButton jButton) {
-        // Note that getText can seem to return null
-        return expectedText.equals(jButton.getText());
-    }
-
-    public void describeTo(Description description) {
-        description.appendText("JButton with text '").appendText(expectedText).appendText("'");
+    protected String featureValueOf(JButton actual) {
+      return actual.getText();
     }
 }

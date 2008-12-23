@@ -144,6 +144,11 @@ public class JListDriver extends ComponentDriver<JList> implements ListDriver {
             return false;
         }
 
+        @Override
+        protected void describeMismatchSafely(JList item, Description mismatchDescription) {
+          mismatchDescription.appendText("list was ").appendValue(item);
+        }
+
         public void describeTo(Description description) {
             description.appendDescriptionOf(matcher);
         }

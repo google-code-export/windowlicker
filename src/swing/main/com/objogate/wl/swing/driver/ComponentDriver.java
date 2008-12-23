@@ -10,9 +10,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Rectangle;
 
-import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 import com.objogate.wl.Gesture;
 import com.objogate.wl.Probe;
@@ -227,7 +227,7 @@ public abstract class ComponentDriver<T extends Component> {
         hasForegroundColor(equalTo(color));
     }
 
-    public void hasForegroundColor(Matcher<Color> color) {
+    public void hasForegroundColor(Matcher<? super Color> color) {
         has(foregroundColor(), color);
     }
 
@@ -235,8 +235,7 @@ public abstract class ComponentDriver<T extends Component> {
         hasBackgroundColor(equalTo(color));
     }
 
-    //TODO (nick): what is a nice way of combining these to produce decent error messages?
-    public void hasBackgroundColor(Matcher<Color> color) {
+    public void hasBackgroundColor(Matcher<? super Color> color) {
         has(backgroundColor(), color);
 
         //need to check opacity else the background color isn't visible
@@ -249,7 +248,7 @@ public abstract class ComponentDriver<T extends Component> {
         return new QueryResultMatcher<T, P>(propertyQuery, valueMatcher);
     }
 
-    public static class QueryResultMatcher<C, P> extends BaseMatcher<C> {
+    public static class QueryResultMatcher<C, P> extends TypeSafeDiagnosingMatcher<C> {
         private final Query<? super C, P> query;
         private final Matcher<? super P> resultMatcher;
 
@@ -258,10 +257,16 @@ public abstract class ComponentDriver<T extends Component> {
             this.resultMatcher = resultMatcher;
         }
 
-        //TODO: any way to check the dynamic type of item?
-        @SuppressWarnings("unchecked")
-        public boolean matches(Object item) {
-            return item != null && resultMatcher.matches(query.query((C) item));
+        @Override
+        protected boolean matchesSafely(C item, Description mismatchDescription) {
+          P result = query.query(item);
+          if (resultMatcher.matches(result)) {
+            return true;
+          }
+          mismatchDescription.appendDescriptionOf(query)
+                             .appendText(" was ")
+                             .appendValue(result);
+          return false; 
         }
 
         public void describeTo(Description description) {
@@ -270,8 +275,8 @@ public abstract class ComponentDriver<T extends Component> {
                     .appendDescriptionOf(query)
                     .appendText(" ")
                     .appendDescriptionOf(resultMatcher);
-
         }
+
     }
 
     public static Query<Component, String> name() {

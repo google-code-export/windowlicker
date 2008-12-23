@@ -4,9 +4,8 @@ import java.awt.Component;
 
 import javax.swing.JProgressBar;
 
-import org.hamcrest.Description;
+import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 
 import com.objogate.wl.Prober;
 import com.objogate.wl.swing.ComponentSelector;
@@ -26,74 +25,47 @@ public class JProgressBarDriver extends ComponentDriver<JProgressBar> {
     }
 
     public void hasMinimum(final Matcher<Integer> matcher) {
-        is(new TypeSafeMatcher<JProgressBar>() {
-            @Override
-            public boolean matchesSafely(JProgressBar jProgressBar) {
-                return matcher.matches(jProgressBar.getMinimum());
-            }
-
-            public void describeTo(Description description) {
-                description.appendText("minimumvalue matches");
-                description.appendDescriptionOf(matcher);
-            }
+        is(new FeatureMatcher<JProgressBar, Integer>(matcher, "progress bar with minimum value", "minimum value") {
+          @Override
+          protected Integer featureValueOf(JProgressBar actual) {
+            return actual.getMinimum();
+          }
         });
     }
 
     public void hasMaximum(final Matcher<Integer> matcher) {
-        is(new TypeSafeMatcher<JProgressBar>() {
-            @Override
-            public boolean matchesSafely(JProgressBar jProgressBar) {
-                return matcher.matches(jProgressBar.getMaximum());
-            }
-
-            public void describeTo(Description description) {
-                description.appendText("maximumvalue matches");
-                description.appendDescriptionOf(matcher);
-            }
-        });
+      is(new FeatureMatcher<JProgressBar, Integer>(matcher, "progress bar with maximum value", "maximum value") {
+        @Override
+        protected Integer featureValueOf(JProgressBar actual) {
+          return actual.getMaximum();
+        }
+      });
     }
 
-    public void hasValue(final Matcher<Integer> matcher) {
-        is(new TypeSafeMatcher<JProgressBar>() {
-            @Override
-            public boolean matchesSafely(JProgressBar jProgressBar) {
-                return matcher.matches(jProgressBar.getValue());
-            }
-
-            public void describeTo(Description description) {
-                description.appendText("value matches");
-                description.appendDescriptionOf(matcher);
-            }
-        });
+    public void hasValue(final Matcher<? super Integer> matcher) {
+      is(new FeatureMatcher<JProgressBar, Integer>(matcher, "progress bar with value", "value") {
+        @Override
+        protected Integer featureValueOf(JProgressBar actual) {
+          return actual.getValue();
+        }
+      });
     }
 
     public void hasString(final Matcher<String> matcher) {
-        is(new TypeSafeMatcher<JProgressBar>() {
-            @Override
-            public boolean matchesSafely(JProgressBar jProgressBar) {
-                return matcher.matches(jProgressBar.getString());
-            }
-
-            public void describeTo(Description description) {
-                description.appendText("string matches");
-                description.appendDescriptionOf(matcher);
-            }
-        });
+      is(new FeatureMatcher<JProgressBar, String>(matcher, "progress bar with string", "string") {
+        @Override
+        protected String featureValueOf(JProgressBar actual) {
+          return actual.getString();
+        }
+      });
     }
 
     public void hasPercentComplete(final Matcher<Double> matcher) {
-        is(new TypeSafeMatcher<JProgressBar>() {
-            @Override
-            public boolean matchesSafely(JProgressBar jProgressBar) {
-                return matcher.matches(jProgressBar.getPercentComplete());
-            }
-
-            public void describeTo(Description description) {
-                description.appendText("percentage matches");
-                description.appendDescriptionOf(matcher);
-            }
-        });
+      is(new FeatureMatcher<JProgressBar, Double>(matcher, "progress bar with percentage complete", "percentage complete") {
+        @Override
+        protected Double featureValueOf(JProgressBar actual) {
+          return actual.getPercentComplete();
+        }
+      });
     }
-
-
 }

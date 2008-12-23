@@ -3,32 +3,27 @@ package com.objogate.wl.swing.matcher;
 import static org.hamcrest.Matchers.equalTo;
 
 import javax.swing.JLabel;
-import org.hamcrest.Description;
+
+import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 
-public class JLabelTextMatcher extends TypeSafeMatcher<JLabel> {
-    private final Matcher<String> matcher;
-
-    public JLabelTextMatcher(Matcher<String> matcher) {
-        this.matcher = matcher;
+public class JLabelTextMatcher extends FeatureMatcher<JLabel, String> {
+    public JLabelTextMatcher(Matcher<? super String> matcher) {
+      super(matcher, "label with text", "text was");
     }
 
     @Override
-    public boolean matchesSafely(JLabel label) {
-        return matcher.matches(label.getText());
+    protected String featureValueOf(JLabel label) {
+      return label.getText();
     }
 
-    public void describeTo(Description description) {
-        description.appendText("with text ")
-                .appendDescriptionOf(matcher);
-    }
 
     public static JLabelTextMatcher withLabelText(String text) {
       return withLabelText(equalTo(text));
     }
 
-    public static JLabelTextMatcher withLabelText(Matcher<String> text) {
+    public static JLabelTextMatcher withLabelText(Matcher<? super String> text) {
         return new JLabelTextMatcher(text);
     }
+
 }

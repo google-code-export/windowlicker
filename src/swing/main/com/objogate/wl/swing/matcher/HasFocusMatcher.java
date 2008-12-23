@@ -13,4 +13,9 @@ public class HasFocusMatcher extends TypeSafeMatcher<Component> {
     public void describeTo(Description description) {
         description.appendText("has focus");
     }
+
+    @Override
+    protected void describeMismatchSafely(Component item, Description mismatchDescription) {
+      mismatchDescription.appendText("did not have focus");
+    }
 }

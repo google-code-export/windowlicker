@@ -11,7 +11,11 @@ public class ComponentOpaqueMatcher extends TypeSafeMatcher<Component> {
     }
 
     public void describeTo(Description description) {
-        description.appendText("opaque");
+        description.appendText("is opaque");
+    }
 
+    @Override
+    protected void describeMismatchSafely(Component item, Description mismatchDescription) {
+      mismatchDescription.appendText("was not opaque");
     }
 }
