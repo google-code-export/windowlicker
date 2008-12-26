@@ -1,5 +1,6 @@
 package com.objogate.wl.swing.driver;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
@@ -33,8 +34,10 @@ class AquaFileChooserUIDriver extends MetalFileChooserUIDriver {
         JTableDriver fileEntry = new JTableDriver(parentOrOwner, JTable.class);
         fileEntry.selectCell(new JLabelTextMatcher(Matchers.equalTo(fileName)));
 
-        //there seems to be a bug in the chooser, the first selection is always lost so we reselect it
+        //there seems to be a bug in the chooser, the first two selections are lost so we reselect it
         try {
+            TimeUnit.MILLISECONDS.sleep(Gestures.MIN_TIME_TO_WAIT_TO_AVOID_DOUBLE_CLICK);
+            fileEntry.selectCell(new JLabelTextMatcher(Matchers.equalTo(fileName)));
             TimeUnit.MILLISECONDS.sleep(Gestures.MIN_TIME_TO_WAIT_TO_AVOID_DOUBLE_CLICK);
             fileEntry.selectCell(new JLabelTextMatcher(Matchers.equalTo(fileName)));
         } catch (InterruptedException e) {
@@ -110,11 +113,10 @@ class AquaFileChooserUIDriver extends MetalFileChooserUIDriver {
     }
 
     private Matcher<JComboBox> comboBoxWithMacTypeModel() {
-      final String TYPE = "apple.laf.AquaFileChooserUI$DirectoryComboBoxModel";
-      return new FeatureMatcher<JComboBox, String>(equalTo(TYPE), "JComboBox with model type", "model type") {
+      return new FeatureMatcher<JComboBox, String>(containsString("DirectoryComboBoxModel"), "JComboBox with model type", "model type") {
         @Override
         protected String featureValueOf(JComboBox actual) {
-          return actual.getModel().getClass().getName();
+          return actual.getModel().getClass().getSimpleName();
         }
         
       };

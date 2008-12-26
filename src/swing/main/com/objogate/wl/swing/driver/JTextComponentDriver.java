@@ -1,8 +1,8 @@
 package com.objogate.wl.swing.driver;
 
 import static com.objogate.wl.gesture.Gestures.type;
-import static com.objogate.wl.gesture.Gestures.typeKey;
-import static java.awt.event.KeyEvent.VK_DELETE;
+import static com.objogate.wl.gesture.Gestures.*;
+import static java.awt.event.KeyEvent.*;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.awt.Component;
@@ -67,12 +67,6 @@ public class JTextComponentDriver<T extends JTextComponent> extends ComponentDri
         }, matcher);
     }
 
-    public void replaceAllText(String text) {
-        moveMouseToCenter();
-        selectAll();
-        typeText(text);
-    }
-
     public void typeText(String text) {
         performGesture(type(text));
     }
@@ -93,6 +87,11 @@ public class JTextComponentDriver<T extends JTextComponent> extends ComponentDri
         leftClickOnComponent();
     }
 
+    public void replaceAllText(String text) {
+      selectAll();
+      typeText(text);
+    }
+ 
     public void clearText() {
         selectAll();
         deleteSelectedText();

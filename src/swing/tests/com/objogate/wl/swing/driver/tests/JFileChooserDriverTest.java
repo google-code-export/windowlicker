@@ -47,7 +47,7 @@ public class JFileChooserDriverTest extends AbstractComponentDriverTest<JFileCho
         modalDialogShower = new ModalDialogShower(chooser);
     }
 
-    private void deleteContents(File dir) {
+    private static void deleteContents(File dir) {
         File[] files = dir.listFiles();
         if (files != null)
             for (File file : files) {
@@ -139,13 +139,9 @@ public class JFileChooserDriverTest extends AbstractComponentDriverTest<JFileCho
         modalDialogShower.showInAnotherThread("Go");
 
         driver.currentDirectory(testFile.getParentFile());
-
         driver.upOneFolder();
-
         driver.currentDirectory(testFile.getParentFile().getParentFile());
-
         driver.upOneFolder();
-
         driver.currentDirectory(testFile.getParentFile().getParentFile().getParentFile());
     }
 
