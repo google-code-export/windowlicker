@@ -47,14 +47,14 @@ public class  JTableHeaderDriverTest extends AbstractComponentDriverTest<JTableH
     @Test public void
     reportsTooManyHeaders() {
       reportsWrongHeaders(matching(withLabelText("one"), withLabelText("two")),
-                          "headers with cells with text \"one\", with text \"two\"");
+                          "headers with cells <label with text \"one\">, <label with text \"two\">");
     }
 
     @SuppressWarnings("unchecked")
     @Test public void
     reportsMismatchedHeaders() {
       reportsWrongHeaders(matching(withLabelText("one"), withLabelText("three"), withLabelText("two")), 
-                          "headers with cells with text \"one\", with text \"three\", with text \"two\"");
+                          "headers with cells <label with text \"one\">, <label with text \"three\">, <label with text \"two\">");
     }
 
     private void reportsWrongHeaders(Matcher<Iterable<? extends Component>> matchers, String expectedMessage) {
