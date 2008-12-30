@@ -1,3 +1,5 @@
+#summary Hmm... Not a very good advert. But read on...
+
 Yes, we are aware of this issue.
 
 However, despite this, the code is actually fairly usable.
