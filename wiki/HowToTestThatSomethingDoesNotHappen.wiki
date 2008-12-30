@@ -12,3 +12,5 @@ A test could wait for some fixed period and then check that the unwanted event d
 Instead, the test should interact with the system in a way that should not cause the unwanted behaviour and then stimulate it in a way that will have an observable effect. The test can wait for the observable effect and then check that the unwanted event did not occur in the meantime.
 
 See [http://code.google.com/p/windowlicker/source/browse/trunk/calculator-example/end-to-end-tests/com/objogate/wl/example/calculator/tests/ExampleWhenNothingHappensTests.java this calculator test] for an example.
+
+You might also like to see page 18 of [http://www.natpryce.com/presentations/xpday-2008.pdf this presentation] Nat gave at XPDay 2008
