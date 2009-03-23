@@ -46,6 +46,10 @@ public class ComponentAssertionProbe<T extends Component> implements ComponentFi
                 .appendText(assertionMet ? "is " : "is not ")
                 .appendDescriptionOf(assertion);
 
+        if (!assertionMet) {
+          description.appendText("\n    because ");
+          assertion.describeMismatch(selector.component(), description);
+        }
         return !assertionMet;
     }
 }
