@@ -334,11 +334,12 @@ public class JTableDriver extends ComponentDriver<JTable> {
       @Override
       protected boolean matchesSafely(JTable table, Description mismatchDescription) {
           for (int row = 0; row < table.getRowCount(); row++) {
-            if (matcher.matches(CellRowIterator.asIterable(table, row))) {
+            Iterable<Component> cellsInRow = CellRowIterator.asIterable(table, row);
+            if (matcher.matches(cellsInRow)) {
               return true;
             }
+            matcher.describeMismatch(cellsInRow, mismatchDescription);
           }
-          mismatchDescription.appendText("table was").appendValue(table);
           return false;
       }
 
