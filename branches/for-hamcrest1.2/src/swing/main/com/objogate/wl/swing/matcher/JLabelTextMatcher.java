@@ -9,7 +9,7 @@ import org.hamcrest.Matcher;
 
 public class JLabelTextMatcher extends FeatureMatcher<JLabel, String> {
     public JLabelTextMatcher(Matcher<? super String> matcher) {
-      super(matcher, "label with text", "text was");
+      super(matcher, "label with text", "text");
     }
 
     @Override

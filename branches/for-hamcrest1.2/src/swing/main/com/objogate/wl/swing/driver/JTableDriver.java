@@ -338,6 +338,7 @@ public class JTableDriver extends ComponentDriver<JTable> {
             if (matcher.matches(cellsInRow)) {
               return true;
             }
+            mismatchDescription.appendText("\n      in row " + row + ": ");
             matcher.describeMismatch(cellsInRow, mismatchDescription);
           }
           return false;

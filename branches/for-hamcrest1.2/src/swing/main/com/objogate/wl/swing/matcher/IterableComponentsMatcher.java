@@ -23,6 +23,7 @@ public final class IterableComponentsMatcher extends TypeSafeDiagnosingMatcher<I
   @Override
   protected boolean matchesSafely(Iterable<? extends Component> components, Description mismatchDescription) {
     Iterator<? extends Component> iterator = components.iterator();
+    int componentIx = 0;
     for (Matcher<? extends JComponent> matcher : matchers) {
       if (!iterator.hasNext()) {
         mismatchDescription.appendText("no component that ").appendDescriptionOf(matcher);
@@ -30,9 +31,11 @@ public final class IterableComponentsMatcher extends TypeSafeDiagnosingMatcher<I
       }
       Component component = iterator.next();
       if (! matcher.matches(component)) {
+        mismatchDescription.appendText("component " + componentIx + " " );
         matcher.describeMismatch(component, mismatchDescription);
         return false;
       }
+      componentIx++;
     }
     if (iterator.hasNext()) {
       mismatchDescription.appendText("extra component: ").appendValue(iterator.next());
