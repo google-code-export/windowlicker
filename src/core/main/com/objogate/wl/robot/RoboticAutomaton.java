@@ -28,13 +28,11 @@ public class RoboticAutomaton implements Automaton {
     }
 
     private static Robot createRobot() {
-        Robot robot;
         try {
-            robot = new Robot();
+            return new Robot();
         } catch (AWTException e) {
             throw new Defect("could not create AWT robot", e);
         }
-        return robot;
     }
 
     public void perform(Gesture... gestures) {
