@@ -17,8 +17,8 @@
 	<classpathentry kind="lib" path="lib/webdriver/webdriver-common-619.jar"/>
 	<classpathentry kind="lib" path="lib/junit/junit-dep-4.6.jar"/>
 	<classpathentry kind="lib" path="lib/hamcrest/hamcrest-all-1.2RC4.jar"/>
+	<classpathentry kind="lib" path="lib/jmock/jmock-junit4-2.6RC2.jar"/>
+	<classpathentry kind="lib" path="lib/jmock/jmock-2.6RC2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/jmock/jmock-2.4.0.jar"/>
-	<classpathentry kind="lib" path="lib/jmock/jmock-junit4-2.4.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
