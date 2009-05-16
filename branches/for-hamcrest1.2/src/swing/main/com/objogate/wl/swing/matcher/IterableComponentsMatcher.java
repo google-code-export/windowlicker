@@ -26,7 +26,7 @@ public final class IterableComponentsMatcher extends TypeSafeDiagnosingMatcher<I
     int componentIx = 0;
     for (Matcher<? extends JComponent> matcher : matchers) {
       if (!iterator.hasNext()) {
-        mismatchDescription.appendText("no component that ").appendDescriptionOf(matcher);
+        mismatchDescription.appendText("no component is ").appendDescriptionOf(matcher);
         return false;
       }
       Component component = iterator.next();
