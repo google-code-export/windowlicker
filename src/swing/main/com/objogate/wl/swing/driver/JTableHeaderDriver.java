@@ -14,7 +14,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.hamcrest.Description;
-import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
@@ -28,7 +27,6 @@ import com.objogate.wl.gesture.Tracker;
 import com.objogate.wl.swing.ComponentManipulation;
 import com.objogate.wl.swing.ComponentSelector;
 import com.objogate.wl.swing.gesture.GesturePerformer;
-import com.objogate.wl.swing.matcher.IterableComponentsMatcher;
 
 public class JTableHeaderDriver extends ComponentDriver<JTableHeader> {
     public JTableHeaderDriver(GesturePerformer gesturePerformer, ComponentSelector<JTableHeader> componentSelector, Prober prober) {
@@ -193,18 +191,6 @@ public class JTableHeaderDriver extends ComponentDriver<JTableHeader> {
         }
     }
    
-    
-//    private static class TableHeadersMatcher extends FeatureMatcher<JTableHeader, Iterable<? extends Component>> {
-//      TableHeadersMatcher(Matcher<Iterable<? extends Component>> matcher) { 
-//        super(matcher, "with headers", "headers were");
-//      }
-//
-//      @Override
-//      protected Iterable<? extends Component> featureValueOf(JTableHeader actual) {
-//        return HeadersIterator.asIterable(actual);
-//      }
-//    }
-    
     private static class TableHeadersMatcher extends TypeSafeDiagnosingMatcher<JTableHeader> {
       private final Matcher<Iterable<? extends Component>> headersMatcher;
       public TableHeadersMatcher(Matcher<Iterable<? extends Component>> headersMatcher) {
