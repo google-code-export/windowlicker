@@ -27,7 +27,7 @@ public class JPasswordFieldDriver extends JTextComponentDriver<JPasswordField> {
     }
 
     @Override
-    public void hasText(Matcher<String> matcher) {
+    public void hasText(Matcher<? super String> matcher) {
         throw new Defect("selecting or inspecting text from a password field is not allowed");
     }
 
@@ -37,7 +37,7 @@ public class JPasswordFieldDriver extends JTextComponentDriver<JPasswordField> {
     }
 
     @Override
-    public void hasSelectedText(Matcher<String> matcher) {
+    public void hasSelectedText(Matcher<? super String> matcher) {
         throw new Defect("selecting or inspecting text from a password field is not allowed");
     }
 }

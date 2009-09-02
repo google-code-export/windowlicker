@@ -1,17 +1,22 @@
 package com.objogate.wl.swing.matcher;
 
 import java.awt.Component;
+
 import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 
-public class ComponentEnabledMatcher extends TypeSafeMatcher<Component> {
+public class ComponentEnabledMatcher extends TypeSafeDiagnosingMatcher<Component> {
     @Override
-    public boolean matchesSafely(Component c) {
-        return c.isEnabled();
+    protected boolean matchesSafely(Component item, Description mismatchDescription) {
+      if (item.isEnabled()) {
+        return true; 
+      }
+      mismatchDescription.appendText("was not enabled");
+      return false;
     }
-
+  
     public void describeTo(Description description) {
-        description.appendText("enabled");
-
+      description.appendText("enabled");
     }
+
 }

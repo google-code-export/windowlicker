@@ -7,11 +7,11 @@ import org.openqa.selenium.WebElement;
 
 public abstract class ElementPropertyProbe extends ElementProbe {
     private final String propertyName;
-    private final Matcher<String> valueMatcher;
+    private final Matcher<? super String> valueMatcher;
 
     private String actualValue;
 
-    protected ElementPropertyProbe(AsyncElementDriver elementDriver, String propertyName, Matcher<String> textMatcher) {
+    protected ElementPropertyProbe(AsyncElementDriver elementDriver, String propertyName, Matcher<? super String> textMatcher) {
         super(elementDriver);
         this.propertyName = propertyName;
         this.valueMatcher = textMatcher;

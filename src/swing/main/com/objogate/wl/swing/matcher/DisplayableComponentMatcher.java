@@ -13,4 +13,9 @@ public class DisplayableComponentMatcher extends TypeSafeMatcher<Component> {
     public boolean matchesSafely(Component component) {
         return component.isDisplayable();
     }
+
+    @Override
+    protected void describeMismatchSafely(Component item, Description mismatchDescription) {
+      mismatchDescription.appendText("was not displayable");
+    }
 }

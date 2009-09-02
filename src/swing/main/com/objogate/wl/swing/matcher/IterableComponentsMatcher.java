@@ -5,41 +5,51 @@
 package com.objogate.wl.swing.matcher;
 
 import java.awt.Component;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import javax.swing.JComponent;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 
-public final class IterableComponentsMatcher extends TypeSafeMatcher<Iterable<? extends Component>> {
+public final class IterableComponentsMatcher extends TypeSafeDiagnosingMatcher<Iterable<? extends Component>> {
   private final Matcher<? extends JComponent>[] matchers;
 
   public IterableComponentsMatcher(Matcher<? extends JComponent>[] matchers) {
     this.matchers = matchers;
   }
 
-  @Override public boolean matchesSafely(Iterable<? extends Component> components) {
+  @Override
+  protected boolean matchesSafely(Iterable<? extends Component> components, Description mismatchDescription) {
     Iterator<? extends Component> iterator = components.iterator();
+    int componentIx = 0;
     for (Matcher<? extends JComponent> matcher : matchers) {
-      if (! isAMatch(matcher, iterator)) {
+      if (!iterator.hasNext()) {
+        mismatchDescription.appendText("no component is ").appendDescriptionOf(matcher);
         return false;
       }
+      Component component = iterator.next();
+      if (! matcher.matches(component)) {
+        mismatchDescription.appendText("component " + componentIx + " " );
+        matcher.describeMismatch(component, mismatchDescription);
+        return false;
+      }
+      componentIx++;
     }
-    return ! iterator.hasNext();
+    if (iterator.hasNext()) {
+      mismatchDescription.appendText("extra component: ").appendValue(iterator.next());
+      return false;
+    }
+    return true;
   }
 
   public void describeTo(Description description) {
-    description.appendList("with cells ", ", ", "", Arrays.asList(matchers));
-  }
-
-  private boolean isAMatch(Matcher<? extends JComponent> matcher, Iterator<? extends Component> iterator) {
-    return iterator.hasNext() && matcher.matches(iterator.next());
+    description.appendValueList("with cells ", ", ", "", matchers);
   }
 
   public static Matcher<Iterable<? extends Component>> matching(final Matcher<? extends JComponent>... matchers) {
     return new IterableComponentsMatcher(matchers);
   }
+
 }

@@ -1,10 +1,13 @@
 package com.objogate.wl.swing.driver;
 
+import static com.objogate.wl.swing.matcher.ComponentMatchers.withButtonText;
+
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JTextField;
 import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import com.objogate.wl.gesture.Gestures;
@@ -45,16 +48,7 @@ class MetalFileChooserUIDriver implements FileChooserUIDriver {
             }
         });
         String text = approveButtonText[0] == null ? "Open" : approveButtonText[0];
-        new AbstractButtonDriver<JButton>(parentOrOwner, JButton.class, ComponentMatchers.withButtonText(text), new TypeSafeMatcher<JButton>() {
-            @Override
-            public boolean matchesSafely(JButton jButton) {
-                return jButton.isVisible();
-            }
-
-            public void describeTo(Description description) {
-                description.appendText("visible button");
-            }
-        }).click();
+        new AbstractButtonDriver<JButton>(parentOrOwner, JButton.class, withButtonText(text), isVisibleButton()).click();
     }
 
     @SuppressWarnings("unchecked")
@@ -85,6 +79,25 @@ class MetalFileChooserUIDriver implements FileChooserUIDriver {
 
     public void upOneFolder() {
         movementIconNumber(0).click();
+    }
+
+
+    private Matcher<JButton> isVisibleButton() {
+      return new TypeSafeMatcher<JButton>() {
+          @Override
+          public boolean matchesSafely(JButton jButton) {
+              return jButton.isVisible();
+          }
+
+          public void describeTo(Description description) {
+              description.appendText("button is visible");
+          }
+
+          @Override
+          protected void describeMismatchSafely(JButton item, Description mismatchDescription) {
+            mismatchDescription.appendText("was not visible");
+          }
+      };
     }
 
     private AbstractButtonDriver<JButton> movementIconNumber(int toChoose) {

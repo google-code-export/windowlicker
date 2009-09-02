@@ -1,11 +1,13 @@
 package com.objogate.wl.swing.matcher;
 
-import javax.swing.AbstractButton;
 import java.awt.event.KeyEvent;
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
 
-public class AbstractButtonAcceleratorMatcher<T extends AbstractButton> extends TypeSafeMatcher<T> {
+import javax.swing.AbstractButton;
+
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
+
+public class AbstractButtonAcceleratorMatcher<T extends AbstractButton> extends TypeSafeDiagnosingMatcher<T> {
     private int keyCode;
 
     public AbstractButtonAcceleratorMatcher(int keyCode) {
@@ -13,8 +15,13 @@ public class AbstractButtonAcceleratorMatcher<T extends AbstractButton> extends 
     }
 
     @Override
-    public boolean matchesSafely(T buttonAlike) {
-        return buttonAlike.getMnemonic() == keyCode;
+    protected boolean matchesSafely(T buttonAlike, Description mismatchDescription) {
+      int mnemonic = buttonAlike.getMnemonic();
+      if (mnemonic == keyCode) {
+        return true;
+      }
+      mismatchDescription.appendText("accelerator was ").appendValue(mnemonic);
+      return false;
     }
 
     public void describeTo(Description description) {
@@ -22,4 +29,5 @@ public class AbstractButtonAcceleratorMatcher<T extends AbstractButton> extends 
         description.appendValue(KeyEvent.getKeyText(keyCode));
         description.appendText("'");
     }
+
 }

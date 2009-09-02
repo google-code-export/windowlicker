@@ -1,22 +1,18 @@
 package com.objogate.wl.swing.matcher;
 
 import java.awt.Color;
+
 import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.core.IsEqual;
 
-public class ColorMatcher extends TypeSafeMatcher<Color> {
-    private final Color expected;
-
+public class ColorMatcher extends IsEqual<Color> {
     public ColorMatcher(Color expected) {
-        this.expected = expected;
+      super(expected);
     }
 
     @Override
-    public boolean matchesSafely(Color item) {
-        return expected.equals(item);
-    }
-
     public void describeTo(Description description) {
-        description.appendText("color matching " + expected);
+        description.appendText("color matching ");
+        super.describeTo(description);
     }
 }

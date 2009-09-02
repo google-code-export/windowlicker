@@ -16,7 +16,7 @@ import javax.swing.table.TableColumnModel;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 import com.objogate.exception.Defect;
 import com.objogate.wl.Prober;
@@ -191,20 +191,26 @@ public class JTableHeaderDriver extends ComponentDriver<JTableHeader> {
         }
     }
    
-    
-    private static final class TableHeadersMatcher extends TypeSafeMatcher<JTableHeader> {
-      private final Matcher<Iterable<? extends Component>> matcher;
-      TableHeadersMatcher(Matcher<Iterable<? extends Component>> matcher) { this.matcher = matcher; }
+    private static class TableHeadersMatcher extends TypeSafeDiagnosingMatcher<JTableHeader> {
+      private final Matcher<Iterable<? extends Component>> headersMatcher;
+      public TableHeadersMatcher(Matcher<Iterable<? extends Component>> headersMatcher) {
+        this.headersMatcher = headersMatcher;
+      }
 
-      @Override public boolean matchesSafely(JTableHeader tableHeader) {
-          return matcher.matches(HeadersIterator.asIterable(tableHeader));
+      @Override
+      protected boolean matchesSafely(JTableHeader actual, Description mismatchDescription) {
+        if (headersMatcher.matches(HeadersIterator.asIterable(actual))) {
+          return true;
+        }
+        headersMatcher.describeMismatch(HeadersIterator.asIterable(actual), mismatchDescription);
+        return false;
       }
 
       public void describeTo(Description description) {
-          description.appendText("with headers ")
-                     .appendDescriptionOf(matcher);
+          description.appendText("table with headers ").appendDescriptionOf(headersMatcher);
       }
     }
+    
     
     private static class HeadersIterator implements Iterator<Component> {
       private final JTable table;

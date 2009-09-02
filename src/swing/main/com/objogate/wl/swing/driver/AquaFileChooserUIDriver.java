@@ -1,10 +1,12 @@
 package com.objogate.wl.swing.driver;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+
 import java.awt.Component;
-import java.awt.Container;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -12,8 +14,10 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import org.hamcrest.Description;
+import org.hamcrest.FeatureMatcher;
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 import com.objogate.exception.Defect;
 import com.objogate.wl.gesture.Gestures;
@@ -30,8 +34,10 @@ class AquaFileChooserUIDriver extends MetalFileChooserUIDriver {
         JTableDriver fileEntry = new JTableDriver(parentOrOwner, JTable.class);
         fileEntry.selectCell(new JLabelTextMatcher(Matchers.equalTo(fileName)));
 
-        //there seems to be a bug in the chooser, the first selection is always lost so we reselect it
+        //there seems to be a bug in the chooser, the first two selections are lost so we reselect it
         try {
+            TimeUnit.MILLISECONDS.sleep(Gestures.MIN_TIME_TO_WAIT_TO_AVOID_DOUBLE_CLICK);
+            fileEntry.selectCell(new JLabelTextMatcher(Matchers.equalTo(fileName)));
             TimeUnit.MILLISECONDS.sleep(Gestures.MIN_TIME_TO_WAIT_TO_AVOID_DOUBLE_CLICK);
             fileEntry.selectCell(new JLabelTextMatcher(Matchers.equalTo(fileName)));
         } catch (InterruptedException e) {
@@ -49,23 +55,8 @@ class AquaFileChooserUIDriver extends MetalFileChooserUIDriver {
     @Override
     public void createNewFolder(String folderName) {
         new AbstractButtonDriver<JButton>(parentOrOwner, JButton.class, ComponentMatchers.withButtonText("New Folder")).click();
-        JTextFieldDriver textDriver = new JTextFieldDriver(parentOrOwner, JTextField.class, new TypeSafeMatcher<JTextField>() {
-            @Override
-            public boolean matchesSafely(JTextField jTextField) {
-                Container container = jTextField.getParent();
-                Component component = container.getComponent(0);
-                if (component instanceof JLabel) {
-                    JLabel jLabel = (JLabel) component;
-                    return jLabel.getText().equals("File:");
-                }
-
-                return false;
-            }
-
-            public void describeTo(Description description) {
-                description.appendText("JTextField with JLabel sibling containing text 'File'");
-            }
-        });
+        
+        JTextFieldDriver textDriver = new JTextFieldDriver(parentOrOwner, JTextField.class, jTextFieldWithFilePromptSibling());
         textDriver.typeText(folderName);
 
         //hack (nick): can't get hold of the 'Create' button!  so use the keyboard to navigate to it
@@ -78,7 +69,7 @@ class AquaFileChooserUIDriver extends MetalFileChooserUIDriver {
     @Override
     public void upOneFolder() {
         JComboBoxDriver boxDriver = new JComboBoxDriver(parentOrOwner, JComboBox.class,
-                new MacComboBoxModelTypeMatcher(), new ComboBoxModelMinSizeMatcher(2));
+                comboBoxWithMacTypeModel(), comboBoxModelWithMinSize(2));
         boxDriver.selectItem(1);
     }
 
@@ -97,35 +88,46 @@ class AquaFileChooserUIDriver extends MetalFileChooserUIDriver {
         throw new UnsupportedOperationException("There is no 'Desktop' button in the Aqua L&F");
     }
 
-    private class MacComboBoxModelTypeMatcher extends TypeSafeMatcher<JComboBox> {
-        private static final String TYPE = "apple.laf.AquaFileChooserUI$DirectoryComboBoxModel";
-
+    private Matcher<JTextField> jTextFieldWithFilePromptSibling() {
+      final Matcher<? super String> fileLabelMatcher = equalTo("File:");
+      return new TypeSafeDiagnosingMatcher<JTextField>() {
         @Override
-        public boolean matchesSafely(JComboBox jComboBox) {
-            ComboBoxModel comboBoxModel = jComboBox.getModel();
-            return comboBoxModel.getClass().getName().equals(TYPE);
+        protected boolean matchesSafely(JTextField jTextField, Description mismatchDescription) {
+          Component component = jTextField.getParent().getComponent(0);
+          if (! (component instanceof JLabel)) {
+            mismatchDescription.appendText("sibling was a ").appendText(component.getClass().getSimpleName());
+            return false;
+          }
+          String jLabelText = ((JLabel) component).getText();
+          if (! fileLabelMatcher.matches(jLabelText)) {
+            mismatchDescription.appendText("Label text");
+            fileLabelMatcher.describeMismatch(jLabelText, mismatchDescription);
+            return false;
+          }
+          return true;
         }
-
         public void describeTo(Description description) {
-            description.appendText("JComboBox with model of type " + TYPE);
+            description.appendText("JTextField with JLabel sibling with text").appendDescriptionOf(fileLabelMatcher);
         }
+      };
     }
 
-    private class ComboBoxModelMinSizeMatcher extends TypeSafeMatcher<JComboBox> {
-        private final int minSize;
-
-        public ComboBoxModelMinSizeMatcher(int minSize) {
-            this.minSize = minSize;
-        }
-
+    private Matcher<JComboBox> comboBoxWithMacTypeModel() {
+      return new FeatureMatcher<JComboBox, String>(containsString("DirectoryComboBoxModel"), "JComboBox with model type", "model type") {
         @Override
-        public boolean matchesSafely(JComboBox jComboBox) {
-            ComboBoxModel comboBoxModel = jComboBox.getModel();
-            return comboBoxModel.getSize() >= minSize;
+        protected String featureValueOf(JComboBox actual) {
+          return actual.getModel().getClass().getSimpleName();
         }
+        
+      };
+    }
 
-        public void describeTo(Description description) {
-            description.appendText("JComboBox with model with at least on entry");
+    private Matcher<JComboBox> comboBoxModelWithMinSize(int minSize) {
+      return new FeatureMatcher<JComboBox, Integer>(greaterThanOrEqualTo(minSize), "JComboBox with model with size", "model size") {
+        @Override
+        protected Integer featureValueOf(JComboBox actual) {
+          return actual.getModel().getSize();
         }
+      };
     }
 }

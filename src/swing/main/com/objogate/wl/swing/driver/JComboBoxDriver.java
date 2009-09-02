@@ -2,6 +2,7 @@ package com.objogate.wl.swing.driver;
 
 import static com.objogate.wl.swing.probe.ComponentIdentity.selectorFor;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 
 import java.awt.Component;
 
@@ -12,7 +13,6 @@ import javax.swing.plaf.basic.ComboPopup;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 
 import com.objogate.wl.Prober;
 import com.objogate.wl.Query;
@@ -73,21 +73,8 @@ public class JComboBoxDriver extends ComponentDriver<JComboBox> implements ListD
         public ComboPopupComponentDriver(ComponentDriver<?> parent) {
             super(parent, 
                 new SingleComponentFinder<JComponent>(
-                    new RecursiveComponentFinder<JComponent>(JComponent.class, thatImplementsComboPopup(), 
-                        new TopLevelWindowFinder())));
-        }
-
-        private static TypeSafeMatcher<JComponent> thatImplementsComboPopup() {
-            return new TypeSafeMatcher<JComponent>() {
-                @Override
-                public boolean matchesSafely(JComponent component) {
-                    return component instanceof ComboPopup;
-                }
-
-                public void describeTo(Description description) {
-                    description.appendText("a component that implements ComboPopup");
-                }
-            };
+                    new RecursiveComponentFinder<JComponent>(
+                        JComponent.class, instanceOf(ComboPopup.class), new TopLevelWindowFinder())));
         }
 
         public void selectItem(final int index) {

@@ -1,19 +1,12 @@
 package com.objogate.wl.swing.driver.tests;
 
-import static com.objogate.wl.swing.matcher.IterableComponentsMatcher.matching;
-import static com.objogate.wl.swing.matcher.JLabelTextMatcher.withLabelText;
 import static com.objogate.wl.swing.probe.ComponentIdentity.selectorFor;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
-import java.awt.Component;
 import java.awt.Dimension;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,10 +18,10 @@ public class  JTableHeaderDriverTest extends AbstractComponentDriverTest<JTableH
     @Before
     public void setUp() throws Exception {
         view(new JScrollPane(table));
-        driver = createDriverFor(table);
+        driver = driverFor(table);
     }
     
-    private JTableHeaderDriver createDriverFor(JTable drivenTable) {
+    private JTableHeaderDriver driverFor(JTable drivenTable) {
       JScrollPane pane = new JScrollPane(drivenTable);
       pane.setPreferredSize(new Dimension(800, 600));
       view(pane);
@@ -36,40 +29,6 @@ public class  JTableHeaderDriverTest extends AbstractComponentDriverTest<JTableH
       return new JTableHeaderDriver(gesturePerformer, selectorFor(drivenTable.getTableHeader()), prober);
     }
     
-    @SuppressWarnings("unchecked")
-    @Test public void
-    detectsHasHeadersMatching() {
-      JTableHeaderDriver smallDriver = createDriverFor(JTableDriverTest.SMALL_TABLE);
-      smallDriver.hasHeaders(matching(withLabelText("one"), withLabelText("two"), withLabelText("three"))); 
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test public void
-    reportsTooManyHeaders() {
-      reportsWrongHeaders(matching(withLabelText("one"), withLabelText("two")),
-                          "headers with cells with text \"one\", with text \"two\"");
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test public void
-    reportsMismatchedHeaders() {
-      reportsWrongHeaders(matching(withLabelText("one"), withLabelText("three"), withLabelText("two")), 
-                          "headers with cells with text \"one\", with text \"three\", with text \"two\"");
-    }
-
-    private void reportsWrongHeaders(Matcher<Iterable<? extends Component>> matchers, String expectedMessage) {
-      prober.setTimeout(300);
-      JTableHeaderDriver smallDriver = createDriverFor(JTableDriverTest.SMALL_TABLE);
-      try {
-        smallDriver.hasHeaders(matchers); 
-      } catch (AssertionError expected) {
-        assertThat(expected.getMessage(), 
-                   containsString(expectedMessage));
-        return;
-      }
-      fail("Should have failed");
-    }
-
     @Test public void 
     canMoveColumnsToTheRight() throws Exception {
         driver.moveColumn(2, 3);

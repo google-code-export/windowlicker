@@ -1,8 +1,8 @@
 package com.objogate.wl.swing.driver;
 
 import static com.objogate.wl.gesture.Gestures.type;
-import static com.objogate.wl.gesture.Gestures.typeKey;
-import static java.awt.event.KeyEvent.VK_DELETE;
+import static com.objogate.wl.gesture.Gestures.*;
+import static java.awt.event.KeyEvent.*;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.awt.Component;
@@ -39,7 +39,7 @@ public class JTextComponentDriver<T extends JTextComponent> extends ComponentDri
         hasText(equalTo(expectedText));
     }
 
-    public void hasText(Matcher<String> matcher) {
+    public void hasText(Matcher<? super String> matcher) {
         has(new Query<T, String>() {
             public String query(T component) {
                 return component.getText();
@@ -55,7 +55,7 @@ public class JTextComponentDriver<T extends JTextComponent> extends ComponentDri
         hasSelectedText(equalTo(expected));
     }
 
-    public void hasSelectedText(Matcher<String> matcher) {
+    public void hasSelectedText(Matcher<? super String> matcher) {
         has(new Query<T, String>() {
             public String query(T component) {
                 return component.getSelectedText();
@@ -65,12 +65,6 @@ public class JTextComponentDriver<T extends JTextComponent> extends ComponentDri
                 description.appendText("selected text");
             }
         }, matcher);
-    }
-
-    public void replaceAllText(String text) {
-        moveMouseToCenter();
-        selectAll();
-        typeText(text);
     }
 
     public void typeText(String text) {
@@ -93,6 +87,11 @@ public class JTextComponentDriver<T extends JTextComponent> extends ComponentDri
         leftClickOnComponent();
     }
 
+    public void replaceAllText(String text) {
+      selectAll();
+      typeText(text);
+    }
+ 
     public void clearText() {
         selectAll();
         deleteSelectedText();

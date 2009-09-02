@@ -1,11 +1,15 @@
 package com.objogate.wl.swing.driver;
 
-import javax.swing.AbstractButton;
+import static org.hamcrest.Matchers.not;
+
 import java.awt.Component;
+
+import javax.swing.AbstractButton;
+
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
-import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
+
 import com.objogate.wl.Prober;
 import com.objogate.wl.Query;
 import com.objogate.wl.internal.PropertyQuery;
@@ -16,7 +20,8 @@ import com.objogate.wl.swing.internal.query.TextQuery;
 
 
 public class AbstractButtonDriver<T extends AbstractButton> extends ComponentDriver<T>
-        implements TextQuery, MnemonicQuery {
+        implements TextQuery, MnemonicQuery 
+{
 
     public AbstractButtonDriver(GesturePerformer gesturePerformer, ComponentSelector<T> componentSelector, Prober prober) {
         super(gesturePerformer, componentSelector, prober);
@@ -34,7 +39,7 @@ public class AbstractButtonDriver<T extends AbstractButton> extends ComponentDri
         leftClickOnComponent();
     }
 
-    public void hasText(Matcher<String> matcher) {
+    public void hasText(Matcher<? super String> matcher) {
         has(text(), matcher);
     }
 
@@ -50,7 +55,7 @@ public class AbstractButtonDriver<T extends AbstractButton> extends ComponentDri
         };
     }
 
-    public void mnemonic(Matcher<Character> matcher) {
+    public void mnemonic(Matcher<? super Character> matcher) {
         has(mnemonic(), matcher);
     }
 
@@ -67,18 +72,22 @@ public class AbstractButtonDriver<T extends AbstractButton> extends ComponentDri
     }
 
     public void isNotChecked() {
-        is(Matchers.not(selected()));
+        is(not(selected()));
     }
 
-    private TypeSafeMatcher<AbstractButton> selected() {
-        return new TypeSafeMatcher<AbstractButton>() {
-            @Override
-            public boolean matchesSafely(AbstractButton item) {
-                return item.isSelected();
-            }
-
+    private Matcher<AbstractButton> selected() {
+        return new TypeSafeDiagnosingMatcher<AbstractButton>() {
             public void describeTo(Description description) {
                 description.appendText("is selected");
+            }
+
+            @Override
+            protected boolean matchesSafely(AbstractButton item, Description mismatchDescription) {
+              if (item.isSelected()) {
+                return true;
+              }
+              mismatchDescription.appendText("was not selected");
+              return false;
             }
         };
     }

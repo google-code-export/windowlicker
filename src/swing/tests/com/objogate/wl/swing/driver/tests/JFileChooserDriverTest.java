@@ -27,6 +27,7 @@ import com.objogate.wl.swing.probe.ComponentIdentity;
 import com.objogate.wl.swing.probe.RecursiveComponentFinder;
 
 public class JFileChooserDriverTest extends AbstractComponentDriverTest<JFileChooserDriver> {
+    private static final int INVALID_DIALOG_RESULT = -999;
     private JFileChooser chooser;
     private File testFile = new File("build/grandparent.dir/parent.dir/child.dir/", "test.file");
     private ModalDialogShower modalDialogShower;
@@ -35,7 +36,7 @@ public class JFileChooserDriverTest extends AbstractComponentDriverTest<JFileCho
     public void setUp() throws Exception {
         view(new JLabel(getClass().getName()));
         File dir = testFile.getParentFile();
-        delete(dir);
+        deleteContents(dir);
         dir.mkdirs();
         testFile.createNewFile();
 
@@ -46,12 +47,12 @@ public class JFileChooserDriverTest extends AbstractComponentDriverTest<JFileCho
         modalDialogShower = new ModalDialogShower(chooser);
     }
 
-    private void delete(File dir) {
+    private static void deleteContents(File dir) {
         File[] files = dir.listFiles();
         if (files != null)
             for (File file : files) {
                 if (file.isDirectory())
-                    delete(file);
+                    deleteContents(file);
 
                 file.delete();
             }
@@ -138,13 +139,9 @@ public class JFileChooserDriverTest extends AbstractComponentDriverTest<JFileCho
         modalDialogShower.showInAnotherThread("Go");
 
         driver.currentDirectory(testFile.getParentFile());
-
         driver.upOneFolder();
-
         driver.currentDirectory(testFile.getParentFile().getParentFile());
-
         driver.upOneFolder();
-
         driver.currentDirectory(testFile.getParentFile().getParentFile().getParentFile());
     }
 
@@ -218,7 +215,7 @@ public class JFileChooserDriverTest extends AbstractComponentDriverTest<JFileCho
     class ModalDialogShower {
         private final JFileChooser fileChooser;
         private final CountDownLatch latch = new CountDownLatch(1);
-        private int[] results = new int[]{-999};
+        private int result = INVALID_DIALOG_RESULT;
 
         public ModalDialogShower(JFileChooser fileChooser) {
             this.fileChooser = fileChooser;
@@ -228,7 +225,7 @@ public class JFileChooserDriverTest extends AbstractComponentDriverTest<JFileCho
 
             new Thread(new Runnable() {
                 public void run() {
-                    results[0] = fileChooser.showDialog(frame, approveButtonText);
+                    result = fileChooser.showDialog(frame, approveButtonText);
                     latch.countDown();
                 }
             }).start();
@@ -236,20 +233,20 @@ public class JFileChooserDriverTest extends AbstractComponentDriverTest<JFileCho
 
         public int waitForModalDialogToReturn() throws InterruptedException {
             latch.await(5, TimeUnit.SECONDS);
-            return results[0];
+            return result;
         }
     }
     
 //todo these need to be moved into Platform
-    private Matcher<File> userHome() {
-        return Matchers.equalTo(new File(System.getProperty("user.home")));
+    private Matcher<? super File> userHome() {
+        return equalTo(new File(System.getProperty("user.home")));
     }
 
-    private Matcher<File> desktop() {
-        return Matchers.equalTo(new File(System.getProperty("user.home") + File.separatorChar + "Desktop"));
+    private Matcher<? super File> desktop() {
+        return equalTo(new File(System.getProperty("user.home") + File.separatorChar + "Desktop"));
     }
 
-    private Matcher<File> documents() {
-        return Matchers.equalTo(new File(System.getProperty("user.home") + File.separatorChar + "My Documents"));
+    private Matcher<? super File> documents() {
+        return equalTo(new File(System.getProperty("user.home") + File.separatorChar + "My Documents"));
     }
 }

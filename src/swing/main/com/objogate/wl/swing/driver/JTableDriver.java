@@ -18,7 +18,7 @@ import javax.swing.JTable;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 import com.objogate.exception.Defect;
 import com.objogate.wl.Gesture;
@@ -171,29 +171,29 @@ public class JTableDriver extends ComponentDriver<JTable> {
         });
     }
 
-    public void cellHasColour(int row, Object columnIdentifier, Matcher<Color> foregroundColor, Matcher<Color> backgroundColor) {
+    public void cellHasColour(int row, Object columnIdentifier, Matcher<? super Color> foregroundColor, Matcher<? super Color> backgroundColor) {
         cellHasBackgroundColor(row, columnIdentifier, backgroundColor);
         cellHasForegroundColor(row, columnIdentifier, foregroundColor);
     }
 
-    public void cellHasColour(int row, int col, Matcher<Color> foregroundColor, Matcher<Color> backgroundColor) {
+    public void cellHasColour(int row, int col, Matcher<? super Color> foregroundColor, Matcher<? super Color> backgroundColor) {
         cellHasBackgroundColor(row, col, backgroundColor);
         cellHasForegroundColor(row, col, foregroundColor);
     }
 
-    public void cellHasBackgroundColor(final int row, final Object columnIdentifier, Matcher<Color> backgroundColor) {
+    public void cellHasBackgroundColor(final int row, final Object columnIdentifier, Matcher<? super Color> backgroundColor) {
       cellHasBackgroundColor(cell(row, columnIdentifier), backgroundColor);
     }
 
-    public void cellHasBackgroundColor(final int row, final int col, Matcher<Color> backgroundColor) {
+    public void cellHasBackgroundColor(final int row, final int col, Matcher<? super Color> backgroundColor) {
       cellHasBackgroundColor(cell(row, col), backgroundColor);
     }
     
-    public void cellHasForegroundColor(final int row, final Object columnIdentifier, Matcher<Color> foregroundColor) {
+    public void cellHasForegroundColor(final int row, final Object columnIdentifier, Matcher<? super Color> foregroundColor) {
       cellHasForegroundColor(cell(row, columnIdentifier), foregroundColor);
     }
 
-    public void cellHasForegroundColor(final int row, final int col, Matcher<Color> foregroundColor) {
+    public void cellHasForegroundColor(final int row, final int col, Matcher<? super Color> foregroundColor) {
       cellHasForegroundColor(cell(row, col), foregroundColor);
     }
     
@@ -205,11 +205,11 @@ public class JTableDriver extends ComponentDriver<JTable> {
         cellRenderedWithText(cell(row, col), expectedText);
     }
 
-    public void cellHasForegroundColor(final Location cell, Matcher<Color> foregroundColor) {
+    public void cellHasForegroundColor(final Location cell, Matcher<? super Color> foregroundColor) {
       has(cellWith(cell, foregroundColor()), foregroundColor);
     }
     
-    public void cellHasBackgroundColor(final Location cell, Matcher<Color> backgroundColor) {
+    public void cellHasBackgroundColor(final Location cell, Matcher<? super Color> backgroundColor) {
       has(cellWith(cell, backgroundColor()), backgroundColor);
     }
 
@@ -255,8 +255,7 @@ public class JTableDriver extends ComponentDriver<JTable> {
       };
     }
 
-    private class SelectedCellsMatcher extends TypeSafeMatcher<JTable> {
-        public Cell unselectedCell;
+    private class SelectedCellsMatcher extends TypeSafeDiagnosingMatcher<JTable> {
         private final Cell[] cells;
 
         public SelectedCellsMatcher(Cell... cells) {
@@ -264,22 +263,22 @@ public class JTableDriver extends ComponentDriver<JTable> {
         }
 
         @Override
-        public boolean matchesSafely(JTable table) {
-            for (Cell cell : cells) {
-                if (!table.isCellSelected(cell.row, cell.col)) {
-                    this.unselectedCell = cell;
-                    return false;
-                }
+        protected boolean matchesSafely(JTable table, Description mismatchDescription) {
+          for (Cell cell : cells) {
+            if (!table.isCellSelected(cell.row, cell.col)) {
+              mismatchDescription.appendText("cell " + cell + " was not selected");
+              return false;
             }
-            return true;
+          }
+          return true;
+        }
+        public void describeTo(Description description) {
+            description.appendText("with selected cells ").appendValueList("[", ", ", "]", cells);
         }
 
-        public void describeTo(Description description) {
-            description.appendText("cell " + unselectedCell + " is not selected");
-        }
     }
     
-    private static final class RenderedCellMatcher extends TypeSafeMatcher<RenderedCell> {
+    private static final class RenderedCellMatcher extends TypeSafeDiagnosingMatcher<RenderedCell> {
       private final Matcher<? extends JComponent> matcher;
       RenderedCell foundCell;
 
@@ -287,24 +286,28 @@ public class JTableDriver extends ComponentDriver<JTable> {
         this.matcher = matcher;
       }
 
-      @Override public boolean matchesSafely(RenderedCell renderedCell) {
+      @Override
+      protected boolean matchesSafely(RenderedCell renderedCell, Description mismatchDescription) {
         if (matcher.matches(renderedCell.rendered)) {
           foundCell = renderedCell;
           return true;
         }
+        matcher.describeMismatch(renderedCell, mismatchDescription);
         return false;
       }
 
       public void describeTo(Description description) {
-          description.appendDescriptionOf(matcher);
+          description.appendText("rendered cell ").appendDescriptionOf(matcher);
       }
+
     }
 
-    private static final class CellInTableMatcher extends TypeSafeMatcher<JTable> {
+    private static final class CellInTableMatcher extends TypeSafeDiagnosingMatcher<JTable> {
       private final Matcher<RenderedCell> matcher;
       CellInTableMatcher(Matcher<RenderedCell> matcher) { this.matcher = matcher; }
 
-      @Override public boolean matchesSafely(JTable table) {
+      @Override
+      protected boolean matchesSafely(JTable table, Description mismatchDescription) {
           for (int row = 0; row < table.getRowCount(); row++) {
               for (int col = 0; col < table.getColumnCount(); col++) {
                   Cell cell = cell(row, col);
@@ -313,30 +316,36 @@ public class JTableDriver extends ComponentDriver<JTable> {
                   }
               }
           }
+          mismatchDescription.appendText("table was").appendValue(table);
           return false;
       }
 
       public void describeTo(Description description) {
-          description.appendText("with cell ")
+          description.appendText("table with cell ")
                      .appendDescriptionOf(matcher);
       }
+
     }
 
-    private static final class RowInTableMatcher extends TypeSafeMatcher<JTable> {
+    private static final class RowInTableMatcher extends TypeSafeDiagnosingMatcher<JTable> {
       private final Matcher<Iterable<? extends Component>> matcher;
       RowInTableMatcher(Matcher<Iterable<? extends Component>> matcher) { this.matcher = matcher; }
 
-      @Override public boolean matchesSafely(JTable table) {
+      @Override
+      protected boolean matchesSafely(JTable table, Description mismatchDescription) {
           for (int row = 0; row < table.getRowCount(); row++) {
-            if (matcher.matches(CellRowIterator.asIterable(table, row))) {
+            Iterable<Component> cellsInRow = CellRowIterator.asIterable(table, row);
+            if (matcher.matches(cellsInRow)) {
               return true;
             }
+            mismatchDescription.appendText("\n      in row " + row + ": ");
+            matcher.describeMismatch(cellsInRow, mismatchDescription);
           }
           return false;
       }
 
       public void describeTo(Description description) {
-          description.appendText("with row ")
+          description.appendText("table with row ")
                      .appendDescriptionOf(matcher);
       }
     }

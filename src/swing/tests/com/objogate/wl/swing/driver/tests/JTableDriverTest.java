@@ -3,10 +3,7 @@ package com.objogate.wl.swing.driver.tests;
 import static com.objogate.wl.swing.driver.JTableDriver.cell;
 import static com.objogate.wl.swing.matcher.JLabelTextMatcher.withLabelText;
 import static com.objogate.wl.swing.probe.ComponentIdentity.selectorFor;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -27,13 +24,8 @@ import com.objogate.wl.internal.Platform;
 import com.objogate.wl.swing.driver.JTableDriver;
 import com.objogate.wl.swing.driver.JTableHeaderDriver;
 import com.objogate.wl.swing.driver.JTextFieldDriver;
-import com.objogate.wl.swing.matcher.IterableComponentsMatcher;
 
 public class JTableDriverTest extends AbstractComponentDriverTest<JTableDriver> {
-    public static final JTable SMALL_TABLE = new JTable(
-            new Object[][] { new Object[] { "1x1", "1x2", "1x3" },
-                             new Object[] { "2x1", "2x2", "2x3" } },
-            new Object[] { "one", "two", "three" } );
     public static final NamedColor BLACK = NamedColor.color("BLACK");
     public static final NamedColor WHITE = NamedColor.color("WHITE");
     public static final NamedColor YELLOW = NamedColor.color("YELLOW");
@@ -56,29 +48,6 @@ public class JTableDriverTest extends AbstractComponentDriverTest<JTableDriver> 
     @Test public void 
     detectsHasCellMatching() {
         driver.hasCell(withLabelText(equalTo("1x1")));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test public void
-    detectsHasRowMatching() {
-      JTableDriver smallDriver = createDriverFor(SMALL_TABLE);
-      smallDriver.hasRow(IterableComponentsMatcher.matching(withLabelText("2x1"), withLabelText("2x2"), withLabelText("2x3"))); 
-    }
-
-    
-    @SuppressWarnings("unchecked")
-    @Test public void
-    reportsWhenDoesNotHaveRowMatching() {
-      prober.setTimeout(300);
-      JTableDriver smallDriver = createDriverFor(SMALL_TABLE);
-      try {
-        smallDriver.hasRow(IterableComponentsMatcher.matching(withLabelText("2x1"), withLabelText("1x2"), withLabelText("2x3")));
-      } catch (AssertionError expected) {
-        assertThat(expected.getMessage(), 
-                   containsString("row with cells with text \"2x1\", with text \"1x2\", with text \"2x3\""));
-        return;
-      }
-      fail("Should have failed");
     }
 
     @Test public void 
@@ -221,7 +190,7 @@ public class JTableDriverTest extends AbstractComponentDriverTest<JTableDriver> 
         new JTableHeaderDriver(gesturePerformer, selectorFor(table.getTableHeader()), prober).moveColumn(columnIdentifier, movement);
     }
 
-    private Matcher<Color> matchingColor(final Color expected) {
+    private Matcher<? super Color> matchingColor(final Color expected) {
         return equalTo(expected);
     }
 }

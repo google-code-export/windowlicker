@@ -17,7 +17,7 @@ public abstract class AbstractJTextComponentDriverTest<U extends JTextComponentD
     }
 
     public void setFont(final Font font) {
-        driver.perform("setting text", new ComponentManipulation<JTextComponent>() {
+        driver.perform("setting font", new ComponentManipulation<JTextComponent>() {
             public void manipulate(JTextComponent component) {
                 component.setFont(font);
             }

@@ -1,22 +1,17 @@
 package com.objogate.wl.swing.matcher;
 
 import java.awt.Component;
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
 
-public class ComponentNameMatcher extends TypeSafeMatcher<Component> {
-    private final String name;
+import org.hamcrest.FeatureMatcher;
+import org.hamcrest.Matchers;
 
+public class ComponentNameMatcher extends FeatureMatcher<Component, String> {
     public ComponentNameMatcher(String name) {
-        this.name = name;
+      super(Matchers.equalTo(name), "compenent with name", "name");
     }
 
     @Override
-    public boolean matchesSafely(Component other) {
-        return name.equals(other.getName());
-    }
-
-    public void describeTo(Description description) {
-        description.appendText("named ").appendValue(name);
+    protected String featureValueOf(Component actual) {
+      return actual.getName();
     }
 }

@@ -1,11 +1,15 @@
 package com.objogate.wl.swing.driver;
 
-import javax.swing.JFrame;
-import java.awt.Component;
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.Matchers.equalTo;
+
+import java.awt.Component;
+
+import javax.swing.JFrame;
+
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import static org.hamcrest.Matchers.equalTo;
+
 import com.objogate.wl.Prober;
 import com.objogate.wl.Query;
 import com.objogate.wl.swing.ComponentManipulation;
@@ -70,7 +74,7 @@ public class JFrameDriver extends ComponentDriver<JFrame> {
         hasTitle(equalTo(title));
     }
 
-    public void hasTitle(Matcher<String> matcher) {
+    public void hasTitle(Matcher<? super String> matcher) {
         has(title(), matcher);
     }
 
